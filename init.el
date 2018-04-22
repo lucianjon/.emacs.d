@@ -79,6 +79,10 @@
   :config
   (evil-mode 1))
 
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode))
 
 (use-package general
   :ensure t
@@ -196,6 +200,25 @@
       "pb" 'counsel-projectile-switch-to-buffer
       "pp" 'counsel-projectile-switch-project
       "/"  'counsel-projectile-ag))
+
+(use-package go-mode
+  :ensure t
+  :mode ("\\.go\\'" . go-mode)
+  :config
+  (progn
+    (setq gofmt-command "goimports")
+    (add-hook 'before-save-hook 'gofmt-before-save)
+    (setq-local tab-width 4)
+    (setq-local indent-tabs-mode t)))
+
+(use-package go-rename
+  :ensure t
+  :after go-mode
+  :init
+  (lj-local-leader-def
+    :states 'normal
+    :keymaps 'override
+      "rn" 'go-rename))
 
 (provide 'init)
 
