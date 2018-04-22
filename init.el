@@ -32,7 +32,6 @@
       scroll-conservatively 10000)
 
 (setq make-backup-files nil)
-
 (setq initial-scratch-message nil)
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-message t)
@@ -44,6 +43,23 @@
 (blink-cursor-mode 0)
 (horizontal-scroll-bar-mode -1)
 (save-place-mode 1)
+(fset 'yes-or-no-p 'y-or-n-p)
+(show-paren-mode t)
+(setq-default fill-column 80)
+(add-hook 'after-save-hook
+	  'executable-make-buffer-file-executable-if-script-p)
+(global-auto-revert-mode t)
+
+
+(defun lj-comment-or-uncomment-region-or-line ()
+  "Comments or uncomments the region or the current line if
+there's no active region."
+  (interactive)
+  (let (beg end)
+    (if (region-active-p)
+        (setq beg (region-beginning) end (region-end))
+      (setq beg (line-beginning-position) end (line-end-position)))
+	(comment-or-uncomment-region beg end)))
 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
@@ -52,12 +68,10 @@
 
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
-    apropos-do-all t
     mouse-yank-at-point t
     require-final-newline t
     visible-bell t
     load-prefer-newer t
-    ediff-window-setup-function 'ediff-setup-windows-plain
     save-place-file (concat user-emacs-directory "places")
     backup-directory-alist `(("." . ,(concat user-emacs-directory
                                              "backups"))))
@@ -96,6 +110,22 @@
     (which-key-mode)
     (setq which-key-idle-delay 0.2)))
 
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+(use-package ws-butler
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook #'ws-butler-mode))
+
+(use-package diff-hl
+  :ensure t
+  :config
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  (diff-hl-mode))
+
 (use-package general
   :ensure t
   :config
@@ -106,6 +136,20 @@
 
 (general-create-definer lj-local-leader-def
   :prefix "SPC m")
+
+(general-define-key
+ :states '(normal visual insert emacs)
+ :prefix "SPC"
+ :non-normal-prefix "M-SPC"
+  "/" '(counsel-ag :which-key "ag")
+  "TAB" '(ivy-switch-buffer :which-key "prev buffer")
+  "SPC" '(counsel-M-x :which-key "M-x")
+	";" '(lj-comment-or-uncomment-region-or-line :which-key "comment")
+	"ff" '(counsel-find-file :which-key "find file")
+)
+
+(general-def 'motion
+  "/" 'counsel-grep-or-swiper)
 
 (use-package company
   :ensure t
@@ -156,11 +200,6 @@
 (use-package ivy
   :ensure t
   :diminish (ivy-mode . "")
-  :init
-  (lj-leader-def
-    :states 'normal
-    :keymaps 'override
-      "TAB" 'ivy-switch-buffer)
   :config
   (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
   (ivy-mode 1)
@@ -173,15 +212,7 @@
 
 (use-package counsel
   :ensure t
-  :after swiper
-  :init
-  (lj-leader-def
-    :states 'normal
-    :keymaps 'override
-      "SPC" 'counsel-M-x
-      "ff"  'counsel-find-file)
-  (general-def 'motion
-    "/" 'counsel-grep-or-swiper))
+  :after swiper)
 
 (use-package projectile
   :ensure t
