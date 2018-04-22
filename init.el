@@ -19,8 +19,6 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
-(setq load-prefer-newer t)
-
 (setq gc-cons-threshold 50000000)
 
 (setq large-file-warning-threshold 100000000)
@@ -29,20 +27,44 @@
 
 (setq tab-width 2)
 
-(setq indent-tabs-mode nil)
-
 (setq scroll-step           1
+      scroll-margin         0
       scroll-conservatively 10000)
 
+(setq make-backup-files nil)
+
+(setq initial-scratch-message nil)
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-message t)
+
+(global-set-key (kbd "M-/") 'hippie-expand)
 
 (tool-bar-mode -1)
 (toggle-scroll-bar -1)
 (blink-cursor-mode 0)
+(horizontal-scroll-bar-mode -1)
+(save-place-mode 1)
+
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+
+(setq-default indent-tabs-mode nil)
+(setq save-interprogram-paste-before-kill t
+    apropos-do-all t
+    mouse-yank-at-point t
+    require-final-newline t
+    visible-bell t
+    load-prefer-newer t
+    ediff-window-setup-function 'ediff-setup-windows-plain
+    save-place-file (concat user-emacs-directory "places")
+    backup-directory-alist `(("." . ,(concat user-emacs-directory
+"backups"))))
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
+
+(add-to-list 'default-frame-alist '(font . "Source Code Pro-15" ))
+(set-face-attribute 'default t :font "Source Code Pro-15")
 
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
@@ -55,18 +77,34 @@
 (use-package evil
   :ensure t
   :config
-  (evil-mode 1)
-)
+  (evil-mode 1))
 
 
 (use-package general
   :ensure t
   :config
-  (general-override-mode)
-)
+  (general-override-mode))
+
+(general-create-definer lj-leader-def
+  :prefix "SPC")
+
+(general-create-definer lj-local-leader-def
+  :prefix "SPC m")
 
 (use-package magit
-  :ensure t)
+  :ensure t
+  :functions (magit-display-buffer-fullframe-status-v1)
+  :init
+  (lj-leader-def
+    :states 'normal
+    :keymaps 'override
+    "gs" 'magit-status)
+  :config
+  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
+
+(use-package evil-magit
+  :ensure t
+  :after magit)
 
 ;; solarized-theme
 (use-package solarized-theme
@@ -87,45 +125,65 @@
         (exec-path-from-shell-initialize))
       (setq mac-command-modifier 'meta)
       (setq mac-right-option-modifier 'control)
-      ;; macOS ls doesn't support --dired
       (setq dired-use-ls-dired nil)))
 
 (use-package ivy
   :ensure t
   :diminish (ivy-mode . "")
+  :init
+  (lj-leader-def
+    :states 'normal
+    :keymaps 'override
+      "TAB" 'ivy-switch-buffer)
   :config
+  (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
   (ivy-mode 1)
-  ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
   (setq ivy-use-virtual-buffers t)
-  ;; number of result lines to display
   (setq ivy-height 10)
-  ;; does not count candidates
   (setq ivy-count-format "")
-  ;; no regexp by default
   (setq ivy-initial-inputs-alist nil)
-  ;; configure regexp engine.
   (setq ivy-re-builders-alist
-	;; allow input not in order
         '((t . ivy--regex-ignore-order))))
-
-(use-package swiper
-  :ensure t
-  :config
-  (global-set-key "\C-s" 'swiper))
 
 (use-package counsel
   :ensure t
-  :config
-  (global-set-key (kbd "M-x") 'counsel-M-x))
+  :after swiper
+  :init
+  (lj-leader-def
+    :states 'normal
+    :keymaps 'override
+      "SPC" 'counsel-M-x
+      "ff"  'counsel-find-file)
+  (general-def 'motion
+    "/" 'counsel-grep-or-swiper))
 
 (use-package projectile
-  :ensure t)
+  :ensure t
+  :config
+  (progn
+    (setq projectile-completion-system 'ivy)
+    (setq projectile-switch-project-action 'magit-status)
+    (setq projectile-enable-caching t)
+    (setq projectile-globally-ignored-files '("TAGS" ".DS_Store"))
+    (setq projectile-globally-ignored-file-suffixes '("gz" "zip" "tar" "elc"))
+    (setq projectile-globally-ignored-directories
+          '(".bzr"
+            ".ensime_cache"
+            ".eunit"
+            ".fslckout"
+            ".g8"
+            ".git"
+            ".hg"
+            ".idea"
+            ".stack-work"
+            ".svn"
+            "build"
+            "dist"
+            "node_modules"
+            "vendor"
+            "target"))
+    (projectile-mode)))
 
-(general-create-definer lj-leader-def
-  :prefix "SPC")
-
-(general-create-definer lj-local-leader-def
-  :prefix "SPC m")
 
 (use-package counsel-projectile
   :ensure t
@@ -138,14 +196,6 @@
       "pb" 'counsel-projectile-switch-to-buffer
       "pp" 'counsel-projectile-switch-project
       "/"  'counsel-projectile-ag))
-
-(lj-leader-def
-  :states 'normal
-  :keymaps 'override
-    "SPC" 'counsel-M-x
-    "TAB" 'ivy-switch-buffer
-    "/" 'counsel-ag
-    "ff" 'counsel-find-file)
 
 (provide 'init)
 
