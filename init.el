@@ -36,8 +36,6 @@
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-message t)
 
-(global-set-key (kbd "M-/") 'hippie-expand)
-
 (tool-bar-mode -1)
 (toggle-scroll-bar -1)
 (blink-cursor-mode 0)
@@ -138,14 +136,13 @@ there's no active region."
   :prefix "SPC m")
 
 (general-define-key
- :states '(normal visual insert emacs)
+ :states '(normal visual emacs)
  :prefix "SPC"
- :non-normal-prefix "M-SPC"
-  "/" '(counsel-ag :which-key "ag")
+  "/"   '(counsel-ag :which-key "ag")
   "TAB" '(ivy-switch-buffer :which-key "prev buffer")
   "SPC" '(counsel-M-x :which-key "M-x")
-	";" '(lj-comment-or-uncomment-region-or-line :which-key "comment")
-	"ff" '(counsel-find-file :which-key "find file")
+  ";"   '(lj-comment-or-uncomment-region-or-line :which-key "comment")
+  "ff"  '(counsel-find-file :which-key "find file")
 )
 
 (general-def 'motion
@@ -259,7 +256,7 @@ there's no active region."
   :mode ("\\.go\\'" . go-mode)
   :init
   (setq-local tab-width 4)
-  (setq-local indent-tabs-mode t))
+  (setq-local indent-tabs-mode t)
   :config
   (progn
     (setq gofmt-command "goimports")
@@ -268,16 +265,16 @@ there's no active region."
     (defun lj-go-run-tests (args)
       (interactive)
       (save-selected-window
-        (async-shell-command (concat "go test " args)))
+        (async-shell-command (concat "go test " args))))
 
     (defun lj-go-run-package-tests ()
       (interactive)
       (lj-go-run-tests "")))
 
-    (lj-local-leader-def
-      :states 'normal
-      :keymaps 'override
-      "tp" 'lj-go-run-package-tests)) ;; fix this
+  (lj-local-leader-def
+    :states 'normal
+    :keymaps 'override
+    "tp" 'lj-go-run-package-tests))
 
 (use-package go-rename
   :ensure t
