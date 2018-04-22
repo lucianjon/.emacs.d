@@ -58,13 +58,19 @@
     ediff-window-setup-function 'ediff-setup-windows-plain
     save-place-file (concat user-emacs-directory "places")
     backup-directory-alist `(("." . ,(concat user-emacs-directory
-"backups"))))
+                                             "backups"))))
+
+(define-key minibuffer-local-map (kbd "<escape>") #'keyboard-escape-quit)
+(define-key minibuffer-local-ns-map (kbd "<escape>") #'keyboard-escape-quit)
+(define-key minibuffer-local-completion-map (kbd "<escape>") #'keyboard-escape-quit)
+(define-key minibuffer-local-must-match-map (kbd "<escape>") #'keyboard-escape-quit)
+(define-key minibuffer-local-isearch-map (kbd "<escape>") #'keyboard-escape-quit)
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
-(add-to-list 'default-frame-alist '(font . "Source Code Pro-15" ))
-(set-face-attribute 'default t :font "Source Code Pro-15")
+(add-to-list 'default-frame-alist '(font . "Source Code Pro-16" ))
+(set-face-attribute 'default t :font "Source Code Pro-16")
 
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
@@ -82,7 +88,9 @@
 (use-package which-key
   :ensure t
   :config
-  (which-key-mode))
+  (progn
+    (which-key-mode)
+    (setq which-key-idle-delay 0.2)))
 
 (use-package general
   :ensure t
@@ -184,7 +192,7 @@
             "build"
             "dist"
             "node_modules"
-            "vendor"
+            "*vendor"
             "target"))
     (projectile-mode)))
 
