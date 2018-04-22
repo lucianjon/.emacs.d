@@ -48,6 +48,8 @@
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
 
+(require 'saveplace)
+
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
     apropos-do-all t
