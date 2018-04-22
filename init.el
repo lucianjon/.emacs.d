@@ -83,7 +83,9 @@
 (use-package evil
   :ensure t
   :config
-  (evil-mode 1))
+  (progn
+    (setq evil-mode-line-format nil)
+    (evil-mode 1)))
 
 (use-package which-key
   :ensure t
@@ -102,6 +104,15 @@
 
 (general-create-definer lj-local-leader-def
   :prefix "SPC m")
+
+(use-package company
+  :ensure t
+  :config
+  (add-hook 'after-init-hook 'global-company-mode))
+
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
 
 (use-package magit
   :ensure t
@@ -134,7 +145,8 @@
       (use-package exec-path-from-shell
         :ensure t
         :config
-        (exec-path-from-shell-initialize))
+        (exec-path-from-shell-initialize)
+        (exec-path-from-shell-copy-env "GOPATH"))
       (setq mac-command-modifier 'meta)
       (setq mac-right-option-modifier 'control)
       (setq dired-use-ls-dired nil)))
@@ -199,7 +211,7 @@
 
 (use-package counsel-projectile
   :ensure t
-  :init
+  :config
   (lj-leader-def
     :states 'normal
     :keymaps 'override
@@ -212,21 +224,55 @@
 (use-package go-mode
   :ensure t
   :mode ("\\.go\\'" . go-mode)
+  :init
+  (setq-local tab-width 4)
+  (setq-local indent-tabs-mode t))
   :config
   (progn
     (setq gofmt-command "goimports")
     (add-hook 'before-save-hook 'gofmt-before-save)
-    (setq-local tab-width 4)
-    (setq-local indent-tabs-mode t)))
+
+    (defun lj-go-run-tests (args)
+      (interactive)
+      (save-selected-window
+        (async-shell-command (concat "go test " args)))
+
+    (defun lj-go-run-package-tests ()
+      (interactive)
+      (lj-go-run-tests "")))
+
+    (lj-local-leader-def
+      :states 'normal
+      :keymaps 'override
+      "tp" 'lj-go-run-package-tests)) ;; fix this
 
 (use-package go-rename
   :ensure t
   :after go-mode
-  :init
+  :config
   (lj-local-leader-def
     :states 'normal
     :keymaps 'override
-      "rn" 'go-rename))
+    "rn" 'go-rename))
+
+(use-package company-go
+  :after go-mode
+
+  :config
+  (progn
+    (setq company-go-show-annotation t)
+    (setq company-idle-delay .3)
+    (setq company-echo-delay 0)
+    (add-hook 'go-mode-hook
+      (lambda ()
+        (set (make-local-variable 'company-backends) '(company-go))
+        (company-mode)))))
+
+(use-package go-eldoc
+  :ensure t
+  :after go-mode
+  :config
+  (add-hook 'go-mode-hook 'go-eldoc-setup))
 
 (provide 'init)
 
