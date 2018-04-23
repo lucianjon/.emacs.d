@@ -320,7 +320,7 @@ current window."
       (interactive)
       (lj-go-run-tests "")))
 
-  (lj-local-leader-def
+  (lj-local-leader-def 'normal go-mode
     "gg" 'godef-jump
     "tp" 'lj-go-run-package-tests))
 
@@ -328,7 +328,7 @@ current window."
   :ensure t
   :after go-mode
   :config
-  (lj-local-leader-def
+  (lj-local-leader-def 'normal go-mode
     "rn" 'go-rename))
 
 (use-package company-go
@@ -352,7 +352,7 @@ current window."
 
 (use-package go-tag
   :init
-  (lj-local-leader-def
+  (lj-local-leader-def 'normal go-mode
     "rf" 'go-tag-add
     "rF" 'go-tag-remove))
 
