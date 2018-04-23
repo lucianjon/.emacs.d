@@ -99,7 +99,17 @@ there's no active region."
   :config
   (progn
     (setq evil-mode-line-format nil)
-    (evil-mode 1)))
+    (evil-mode 1)
+    (setq evil-visual-state-cursor '("gray" (hbar . 2)))
+    (setq evil-normal-state-cursor '("DarkGoldenrod2" box))
+    (setq evil-insert-state-cursor '("chartreuse3" (bar . 2)))))
+
+(use-package evil-escape
+  :after evil
+  :config
+  (progn
+    (setq-default evil-escape-key-sequence "jk")
+    (evil-escape-mode)))
 
 (use-package which-key
   :ensure t
