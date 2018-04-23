@@ -154,6 +154,13 @@ current window."
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   (diff-hl-mode))
 
+(use-package dired
+  :defer t
+  :config
+  (progn
+    (setq-default dired-listing-switches "-alhv")
+    (add-hook 'dired-mode-hook 'auto-revert-mode)))
+
 (use-package general
   :ensure t
   :config
