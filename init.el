@@ -61,7 +61,7 @@ there's no active region."
 
 (require 'seq)
 
-(defun lj-alternate-buffer (&optional window)
+(defun lj-alternate-buffer (&optional window) ;; TODO: look into evil-alternate-buffer
   "Toggle back and forth between two buffers.
 WINDOW sets the window in which to toggle, and defaults to the
 current window."
