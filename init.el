@@ -136,22 +136,17 @@ there's no active region."
   :prefix "SPC m")
 
 (general-define-key
- :states '(normal visual emacs)
+ :states '(normal visual insert emacs)
  :prefix "SPC"
+ :non-normal-prefix "M-SPC"
   "/"   '(counsel-ag :which-key "ag")
   "TAB" '(ivy-switch-buffer :which-key "prev buffer")
   "SPC" '(counsel-M-x :which-key "M-x")
   ";"   '(lj-comment-or-uncomment-region-or-line :which-key "comment")
-  "ff"  '(counsel-find-file :which-key "find file")
-)
+  "ff"  '(counsel-find-file :which-key "find file"))
 
 (general-def 'motion
   "/" 'counsel-grep-or-swiper)
-
-(use-package company
-  :ensure t
-  :config
-  (add-hook 'after-init-hook 'global-company-mode))
 
 (use-package flycheck
   :ensure t
@@ -274,6 +269,7 @@ there's no active region."
   (lj-local-leader-def
     :states 'normal
     :keymaps 'override
+    "gg" 'godef-jump
     "tp" 'lj-go-run-package-tests))
 
 (use-package go-rename
