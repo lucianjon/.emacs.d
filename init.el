@@ -171,7 +171,11 @@ current window."
   "bb"  '(ivy-switch-buffer :which-key "prev buffer")
   "SPC" '(counsel-M-x :which-key "M-x")
   ";"   '(lj-comment-or-uncomment-region-or-line :which-key "comment")
-  "ff"  '(counsel-find-file :which-key "find file"))
+  "ff"  '(counsel-find-file :which-key "find file")
+
+  "wd"  '(evil-window-next :which-key "next window")
+  "w/"  '(evil-window-vsplit :which-key "vertical split window")
+  "wc"  '(evil-window-delete :which-key "delete window"))
 
 (general-create-definer lj-local-leader-def
   :prefix "SPC m")
