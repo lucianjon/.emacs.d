@@ -130,20 +130,21 @@ there's no active region."
   (general-override-mode))
 
 (general-create-definer lj-leader-def
-  :prefix "SPC")
+  :states '(normal visual insert emacs)
+  :prefix "SPC"
+  :keymaps 'override
+  :non-normal-prefix "M-SPC")
 
-(general-create-definer lj-local-leader-def
-  :prefix "SPC m")
-
-(general-define-key
- :states '(normal visual insert emacs)
- :prefix "SPC"
- :non-normal-prefix "M-SPC"
+(lj-leader-def
   "/"   '(counsel-ag :which-key "ag")
   "TAB" '(ivy-switch-buffer :which-key "prev buffer")
   "SPC" '(counsel-M-x :which-key "M-x")
   ";"   '(lj-comment-or-uncomment-region-or-line :which-key "comment")
   "ff"  '(counsel-find-file :which-key "find file"))
+
+
+(general-create-definer lj-local-leader-def
+  :prefix "SPC m")
 
 (general-def 'motion
   "/" 'counsel-grep-or-swiper)
