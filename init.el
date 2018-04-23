@@ -48,7 +48,6 @@
 	  'executable-make-buffer-file-executable-if-script-p)
 (global-auto-revert-mode t)
 
-
 (defun lj-comment-or-uncomment-region-or-line ()
   "Comments or uncomments the region or the current line if
 there's no active region."
@@ -194,12 +193,12 @@ current window."
 
 (defun lj-uuidgen-1 (arg)
   "Return a time based UUID (UUIDv1).
-  If ARG is non nil then use CID format."
+ If ARG is non nil then use CID format."
   (interactive "P")
   (let ((uuid (uuidgen-1)))
     (if arg
         (insert-uuid-cid uuid)
-  (insert uuid))))
+      (insert uuid))))
 
 (use-package uuidgen
   :ensure t
