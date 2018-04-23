@@ -185,10 +185,28 @@ current window."
   "wc"  '(evil-window-delete :which-key "delete window"))
 
 (general-create-definer lj-local-leader-def
+  :states 'normal
+  :keymaps 'override
   :prefix "SPC m")
 
 (general-def 'motion
   "/" 'counsel-grep-or-swiper)
+
+(defun lj-uuidgen-1 (arg)
+  "Return a time based UUID (UUIDv1).
+  If ARG is non nil then use CID format."
+  (interactive "P")
+  (let ((uuid (uuidgen-1)))
+    (if arg
+        (insert-uuid-cid uuid)
+  (insert uuid))))
+
+(use-package uuidgen
+  :ensure t
+  :commands (uuidgen-1)
+  :init
+  (progn
+    (lj-leader-def "iUU" 'lj-uuidgen-1)))
 
 (use-package flycheck
   :ensure t
@@ -198,10 +216,7 @@ current window."
   :ensure t
   :functions (magit-display-buffer-fullframe-status-v1)
   :init
-  (lj-leader-def
-    :states 'normal
-    :keymaps 'override
-    "gs" 'magit-status)
+  (lj-leader-def "gs" 'magit-status)
   :config
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
@@ -280,13 +295,11 @@ current window."
   :ensure t
   :config
   (lj-leader-def
-    :states 'normal
-    :keymaps 'override
-      "pf" 'counsel-projectile-find-file
-      "pd" 'counsel-projectile-find-dir
-      "pb" 'counsel-projectile-switch-to-buffer
-      "pp" 'counsel-projectile-switch-project
-      "/"  'counsel-projectile-ag))
+    "pf" 'counsel-projectile-find-file
+    "pd" 'counsel-projectile-find-dir
+    "pb" 'counsel-projectile-switch-to-buffer
+    "pp" 'counsel-projectile-switch-project
+    "/"  'counsel-projectile-ag))
 
 (use-package go-mode
   :ensure t
@@ -309,8 +322,6 @@ current window."
       (lj-go-run-tests "")))
 
   (lj-local-leader-def
-    :states 'normal
-    :keymaps 'override
     "gg" 'godef-jump
     "tp" 'lj-go-run-package-tests))
 
@@ -319,8 +330,6 @@ current window."
   :after go-mode
   :config
   (lj-local-leader-def
-    :states 'normal
-    :keymaps 'override
     "rn" 'go-rename))
 
 (use-package company-go
@@ -341,6 +350,12 @@ current window."
   :after go-mode
   :config
   (add-hook 'go-mode-hook 'go-eldoc-setup))
+
+(use-package go-tag
+  :init
+  (lj-local-leader-def
+    "rf" 'go-tag-add
+    "rF" 'go-tag-remove))
 
 (provide 'init)
 
