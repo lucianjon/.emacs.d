@@ -124,6 +124,7 @@ current window."
     (setq evil-insert-state-cursor '("chartreuse3" (bar . 2)))))
 
 (use-package evil-escape
+  :ensure t
   :after evil
   :config
   (progn
@@ -158,6 +159,7 @@ current window."
   :config
   (progn
     (setq-default dired-listing-switches "-alhv")
+    (setq auto-revert-verbose nil)
     (add-hook 'dired-mode-hook 'auto-revert-mode)))
 
 (use-package general
@@ -351,6 +353,7 @@ current window."
   (add-hook 'go-mode-hook 'go-eldoc-setup))
 
 (use-package go-tag
+  :ensure t
   :init
   (lj-local-leader-def 'normal go-mode
     "rf" 'go-tag-add
