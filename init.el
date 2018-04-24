@@ -117,6 +117,12 @@ current window."
 
 (use-package lj-modeline)
 
+(use-package aggressive-indent
+  :ensure t
+  :config
+  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode))
+
+
 (use-package evil
   :ensure t
   :config
@@ -163,9 +169,15 @@ current window."
   :defer t
   :config
   (progn
-    (setq-default dired-listing-switches "-alhv")
+    (setq-default dired-listing-switches "-alhv")))
+
+(use-package autorevert
+  :ensure t
+  :config
+  (progn
+    (setq global-auto-revert-non-file-buffers t)
     (setq auto-revert-verbose nil)
-    (add-hook 'dired-mode-hook 'auto-revert-mode)))
+    (global-auto-revert-mode 1)))
 
 (use-package general
   :ensure t
