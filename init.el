@@ -102,6 +102,8 @@ current window."
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
+(add-to-list 'load-path (concat user-emacs-directory "config"))
+
 (add-to-list 'default-frame-alist '(font . "Source Code Pro-16" ))
 (set-face-attribute 'default t :font "Source Code Pro-16")
 
@@ -112,6 +114,8 @@ current window."
 
 (eval-when-compile
   (require 'use-package))
+
+(use-package lj-modeline)
 
 (use-package evil
   :ensure t
@@ -151,8 +155,9 @@ current window."
 (use-package diff-hl
   :ensure t
   :config
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-  (diff-hl-mode))
+  (progn
+    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+    (diff-hl-mode)))
 
 (use-package dired
   :defer t
@@ -229,11 +234,12 @@ current window."
 (use-package solarized-theme
   :ensure t
   :config
-  (setq solarized-distinct-fringe-background t)
-  (setq solarized-use-variable-pitch nil)
-  (setq solarized-scale-org-headlines nil)
-  (setq solarized-high-contrast-mode-line t)
-  (load-theme 'solarized-light t))
+  (progn
+    (setq solarized-distinct-fringe-background t)
+    (setq solarized-use-variable-pitch nil)
+    (setq solarized-scale-org-headlines nil)
+    (setq solarized-high-contrast-mode-line t)
+    (load-theme 'solarized-light t)))
 
 ;; Mac OSX specific settings
 (if (eq system-type 'darwin)
@@ -251,14 +257,15 @@ current window."
   :ensure t
   :diminish (ivy-mode . "")
   :config
-  (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-height 10)
-  (setq ivy-count-format "")
-  (setq ivy-initial-inputs-alist nil)
-  (setq ivy-re-builders-alist
-        '((t . ivy--regex-ignore-order))))
+  (progn
+    (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-height 10)
+    (setq ivy-count-format "")
+    (setq ivy-initial-inputs-alist nil)
+    (setq ivy-re-builders-alist
+            '((t . ivy--regex-ignore-order)))))
 
 (use-package counsel
   :ensure t
@@ -335,7 +342,6 @@ current window."
 
 (use-package company-go
   :after go-mode
-
   :config
   (progn
     (setq company-go-show-annotation t)
