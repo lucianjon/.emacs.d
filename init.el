@@ -145,7 +145,14 @@ current window."
   :config
   (progn
     (which-key-mode)
-    (setq which-key-idle-delay 0.2)))
+    (setq which-key-idle-delay 0.0)))
+
+(use-package smartparens
+  :ensure t
+  :config
+  (progn
+	(require 'smartparens-config)
+	(smartparens-global-mode)))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -281,6 +288,17 @@ current window."
 (use-package counsel
   :ensure t
   :after swiper)
+
+(use-package flx-ido
+  :ensure t
+  :config
+  (progn
+    (ido-mode 1)
+    (ido-everywhere 1)
+    (flx-ido-mode 1)
+    ;; disable ido faces to see flx highlights.
+    (setq ido-enable-flex-matching t)
+    (setq ido-use-faces nil)))
 
 (use-package projectile
   :ensure t
