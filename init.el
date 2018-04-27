@@ -209,7 +209,7 @@ current window."
   "wc"  '(evil-window-delete :which-key "delete window"))
 
 (general-create-definer lj-local-leader-def
-  :states 'normal
+  :states '(normal visual insert emacs)
   :keymaps 'override
   :prefix "SPC m")
 
@@ -358,7 +358,8 @@ current window."
       (interactive)
       (lj-go-run-tests "")))
 
-  (lj-local-leader-def 'motion go-mode-map
+  (lj-local-leader-def
+	:keymaps 'go-mode-map
     "gg" 'godef-jump
     "tp" 'lj-go-run-package-tests))
 
@@ -366,7 +367,8 @@ current window."
   :ensure t
   :after go-mode
   :config
-  (lj-local-leader-def 'normal go-mode
+  (lj-local-leader-def
+	:keymaps 'go-mode-map
     "rn" 'go-rename))
 
 (use-package company-go
@@ -390,9 +392,10 @@ current window."
 (use-package go-tag
   :ensure t
   :init
-  (lj-local-leader-def 'normal go-mode
-    "rf" 'go-tag-add
-    "rF" 'go-tag-remove))
+  (lj-local-leader-def
+	:keymaps 'go-mode-map
+	"rf" 'go-tag-add
+	"rF" 'go-tag-remove))
 
 (use-package hydra
   :ensure t)
