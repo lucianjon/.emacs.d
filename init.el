@@ -101,7 +101,7 @@ current window."
 (load custom-file)
 
 ;; Instantly display current keystrokes in mini buffer
-(setq echo-keystrokes 0.02)
+(setq echo-keystrokes 0.00)
 
 ;; Auto-indent on RET
 (define-key global-map (kbd "RET") #'comment-indent-new-line)
@@ -156,7 +156,7 @@ current window."
   :config
   (progn
     (which-key-mode)
-    (setq which-key-idle-delay 0.1)))
+    (setq which-key-idle-delay 0.0)))
 
 (use-package smartparens
   :ensure t
@@ -412,11 +412,31 @@ current window."
 
 (use-package go-tag
   :ensure t
+  :after go-mode
   :init
   (lj-local-leader-def
 	:keymaps 'go-mode-map
 	"rf" 'go-tag-add
 	"rF" 'go-tag-remove))
+
+(use-package go-guru
+  :ensure t
+  :after go-mode
+  :init
+  (lj-local-leader-def
+	:keymaps 'go-mode-map
+    "fd" 'go-guru-describe
+    "ff" 'go-guru-freevars
+    "fi" 'go-guru-implements
+    "fc" 'go-guru-peers
+    "fr" 'go-guru-referrers
+    "fj" 'go-guru-definition
+    "fp" 'go-guru-pointsto
+    "fs" 'go-guru-callstack
+    "fe" 'go-guru-whicherrs
+    "f<" 'go-guru-callers
+    "f>" 'go-guru-callees
+	"fo" 'go-guru-set-scope))
 
 (use-package hydra
   :ensure t)
