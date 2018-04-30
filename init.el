@@ -37,6 +37,7 @@
 (setq inhibit-startup-message t)
 
 (tool-bar-mode -1)
+(menu-bar-mode -1)
 (toggle-scroll-bar -1)
 (blink-cursor-mode 0)
 (horizontal-scroll-bar-mode -1)
@@ -104,8 +105,8 @@ current window."
 
 (add-to-list 'load-path (concat user-emacs-directory "config"))
 
-(add-to-list 'default-frame-alist '(font . "Source Code Pro-16" ))
-(set-face-attribute 'default t :font "Source Code Pro-16")
+(add-to-list 'default-frame-alist '(font . "Source Code Pro-13" ))
+(set-face-attribute 'default t :font "Source Code Pro-13")
 
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
@@ -145,14 +146,14 @@ current window."
   :config
   (progn
     (which-key-mode)
-    (setq which-key-idle-delay 0.0)))
+    (setq which-key-idle-delay 0.1)))
 
 (use-package smartparens
   :ensure t
   :config
   (progn
-	(require 'smartparens-config)
-	(smartparens-global-mode)))
+    (require 'smartparens-config)
+    (smartparens-global-mode)))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -209,7 +210,7 @@ current window."
   "wc"  '(evil-window-delete :which-key "delete window"))
 
 (general-create-definer lj-local-leader-def
-  :states '(normal visual insert emacs)
+  :states 'motion
   :keymaps 'override
   :prefix "SPC m")
 
@@ -236,6 +237,10 @@ current window."
   :ensure t
   :init (global-flycheck-mode))
 
+(use-package popwin
+  :ensure t
+  :config (popwin-mode 1))
+
 (use-package magit
   :ensure t
   :functions (magit-display-buffer-fullframe-status-v1)
@@ -259,14 +264,18 @@ current window."
     (setq solarized-high-contrast-mode-line t)
     (load-theme 'solarized-light t)))
 
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-env "GOPATH")
+  (exec-path-from-shell-copy-env "GOROOT"))
+
 ;; Mac OSX specific settings
 (if (eq system-type 'darwin)
     (progn
-      (use-package exec-path-from-shell
-        :ensure t
-        :config
-        (exec-path-from-shell-initialize)
-        (exec-path-from-shell-copy-env "GOPATH"))
+      (add-to-list 'default-frame-alist '(font . "Source Code Pro-16" ))
+      (set-face-attribute 'default t :font "Source Code Pro-16")
       (setq mac-command-modifier 'meta)
       (setq mac-right-option-modifier 'control)
       (setq dired-use-ls-dired nil)))
@@ -341,27 +350,29 @@ current window."
 (use-package go-mode
   :ensure t
   :mode ("\\.go\\'" . go-mode)
-  :init
-  (setq-local tab-width 4)
-  (setq-local indent-tabs-mode t)
   :config
   (progn
     (setq gofmt-command "goimports")
+    (setq-local tab-width 4)
+    (setq-local indent-tabs-mode t)
+
     (add-hook 'before-save-hook 'gofmt-before-save)
 
     (defun lj-go-run-tests (args)
       (interactive)
-      (save-selected-window
-        (async-shell-command (concat "go test " args))))
-
+      (compilation-start (concat "go test -v" args " " "")
+                         nil (lambda (n) "*go test*") nil))
     (defun lj-go-run-package-tests ()
       (interactive)
-      (lj-go-run-tests "")))
+      (lj-go-run-tests ""))
 
-  (lj-local-leader-def
-	:keymaps 'go-mode-map
-    "gg" 'godef-jump
-    "tp" 'lj-go-run-package-tests))
+    (push (cons "*go test*" '(:dedicated t :position bottom :stick t :noselect t :height 0.4))
+          popwin:special-display-config)
+
+    (lj-local-leader-def
+      :keymaps 'go-mode-map
+      "gg" 'godef-jump
+      "tp" 'lj-go-run-package-tests)))
 
 (use-package go-rename
   :ensure t
