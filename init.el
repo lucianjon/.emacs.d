@@ -111,8 +111,7 @@ current window."
 
 (add-to-list 'load-path (concat user-emacs-directory "config"))
 
-(add-to-list 'default-frame-alist '(font . "Source Code Pro-13" ))
-(set-face-attribute 'default t :font "Source Code Pro-13")
+(set-frame-font "Source Code Pro 13")
 
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
@@ -286,8 +285,7 @@ current window."
 ;; Mac OSX specific settings
 (if (eq system-type 'darwin)
     (progn
-      (add-to-list 'default-frame-alist '(font . "Source Code Pro-16" ))
-      (set-face-attribute 'default t :font "Source Code Pro-16")
+      (set-frame-font "Source Code Pro 16")
       (setq mac-command-modifier 'meta)
       (setq mac-right-option-modifier 'control)
       (setq dired-use-ls-dired nil)))
