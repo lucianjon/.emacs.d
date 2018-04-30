@@ -31,7 +31,6 @@
       scroll-margin         0
       scroll-conservatively 10000)
 
-(setq make-backup-files nil)
 (setq initial-scratch-message nil)
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-message t)
@@ -82,8 +81,6 @@ current window."
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
 
-(require 'saveplace)
-
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
     mouse-yank-at-point t
@@ -102,6 +99,15 @@ current window."
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
+
+;; Instantly display current keystrokes in mini buffer
+(setq echo-keystrokes 0.02)
+
+;; Auto-indent on RET
+(define-key global-map (kbd "RET") #'comment-indent-new-line)
+
+;; Disable backup files
+(setq make-backup-files nil)
 
 (add-to-list 'load-path (concat user-emacs-directory "config"))
 
