@@ -118,6 +118,11 @@ current window."
 
 (use-package lj-modeline)
 
+(use-package smex
+  :ensure t
+  :config
+  (smex-initialize))
+
 (use-package aggressive-indent
   :ensure t
   :config
@@ -207,7 +212,8 @@ current window."
 
   "wd"  '(evil-window-next :which-key "next window")
   "w/"  '(evil-window-vsplit :which-key "vertical split window")
-  "wc"  '(evil-window-delete :which-key "delete window"))
+  "wc"  '(evil-window-delete :which-key "delete window")
+  "tm"  '(toggle-frame-maximized :which-key "maximise window"))
 
 (general-create-definer lj-local-leader-def
   :states 'motion
@@ -231,7 +237,7 @@ current window."
   :commands (uuidgen-1)
   :init
   (progn
-    (lj-leader-def "iUU" 'lj-uuidgen-1)))
+    (lj-leader-def "iUU" 'lj-uuidgen-1 :which-key "generate v1 UUID")))
 
 (use-package flycheck
   :ensure t
