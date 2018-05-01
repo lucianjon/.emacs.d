@@ -211,7 +211,6 @@ current window."
   :non-normal-prefix "M-SPC")
 
 (lj-leader-def
-  "/"   '(counsel-ag :which-key "ag")
   "TAB" '(lj-alternate-buffer :which-key "alternate buffer")
   "bb"  '(ivy-switch-buffer :which-key "prev buffer")
   "SPC" '(counsel-M-x :which-key "M-x")
@@ -304,7 +303,7 @@ current window."
     (setq ivy-count-format "")
     (setq ivy-initial-inputs-alist nil)
     (setq ivy-re-builders-alist
-            '((t . ivy--regex-ignore-order)))))
+          '((t . ivy--regex-ignore-order)))))
 
 (use-package counsel
   :ensure t
@@ -410,9 +409,9 @@ current window."
     (setq company-idle-delay .2)
     (setq company-echo-delay 0)
     (add-hook 'go-mode-hook
-      (lambda ()
-        (set (make-local-variable 'company-backends) '(company-go))
-        (company-mode)))))
+			  (lambda ()
+				(set (make-local-variable 'company-backends) '(company-go))
+				(company-mode)))))
 
 (use-package go-eldoc
   :ensure t
@@ -461,7 +460,6 @@ current window."
 
 (use-package hydra
   :ensure t)
-
 
 (defhydra hydra-dired (:hint nil :color pink)
   "
@@ -515,6 +513,9 @@ T - tag prefix
   ("." nil :color blue))
 
 (define-key dired-mode-map "." 'hydra-dired/body)
+
+(use-package protobuf-mode
+  :ensure t)
 
 (provide 'init)
 
