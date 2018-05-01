@@ -121,6 +121,9 @@ current window."
 (eval-when-compile
   (require 'use-package))
 
+(use-package all-the-icons
+  :ensure t)
+
 (use-package lj-modeline)
 
 (use-package smex
