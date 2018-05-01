@@ -279,8 +279,7 @@ current window."
   :ensure t
   :config
   (exec-path-from-shell-initialize)
-  (exec-path-from-shell-copy-env "GOPATH")
-  (exec-path-from-shell-copy-env "GOROOT"))
+  (exec-path-from-shell-copy-env "GOPATH"))
 
 ;; Mac OSX specific settings
 (if (eq system-type 'darwin)
@@ -372,12 +371,20 @@ current window."
       (interactive)
       (compilation-start (concat "go test -v" args " " "")
                          nil (lambda (n) "*go test*") nil))
+
     (defun lj-go-run-package-tests ()
       (interactive)
       (lj-go-run-tests ""))
 
     (push (cons "*go test*" '(:dedicated t :position bottom :stick t :noselect t :height 0.4))
           popwin:special-display-config)
+
+	;; TODO: integrate with general definer
+	(which-key-add-major-mode-key-based-replacements 'go-mode
+	  "SPC mr" "refactor"
+	  "SPC mg" "goto"
+	  "SPC mh" "help"
+	  "SPC mt" "test")
 
     (lj-local-leader-def
       :keymaps 'go-mode-map
@@ -397,7 +404,7 @@ current window."
   :config
   (progn
     (setq company-go-show-annotation t)
-    (setq company-idle-delay .3)
+    (setq company-idle-delay .2)
     (setq company-echo-delay 0)
     (add-hook 'go-mode-hook
       (lambda ()
@@ -419,10 +426,21 @@ current window."
 	"rf" 'go-tag-add
 	"rF" 'go-tag-remove))
 
+(use-package godoctor
+  :ensure t
+  :init
+  (progn
+	(lj-local-leader-def
+	  :keymaps 'go-mode-map
+	  "re" 'godoctor-extract
+	  "rt" 'godoctor-toggle
+	  "rd" 'godoctor-godoc)))
+
 (use-package go-guru
   :ensure t
   :after go-mode
   :init
+  (which-key-add-major-mode-key-based-replacements 'go-mode "SPC mf" "guru")
   (lj-local-leader-def
 	:keymaps 'go-mode-map
     "fd" 'go-guru-describe
