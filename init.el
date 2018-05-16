@@ -110,6 +110,7 @@ current window."
 (setq make-backup-files nil)
 
 (add-to-list 'load-path (concat user-emacs-directory "config"))
+(add-to-list 'load-path (concat user-emacs-directory "lisp"))
 
 (set-frame-font "Source Code Pro 13")
 
@@ -124,7 +125,16 @@ current window."
 (use-package all-the-icons
   :ensure t)
 
-(use-package lj-modeline)
+(use-package s
+  :ensure t)
+
+(use-package f
+  :ensure t)
+
+(use-package doom-modeline
+  :config
+  :config
+  (+doom-modeline|init))
 
 (use-package smex
   :ensure t
