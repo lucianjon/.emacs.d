@@ -77,6 +77,55 @@ current window."
          ;; `other-buffer' honors `buffer-predicate' so no need to filter
          (other-buffer current-buffer t)))))
 
+(require 's)
+
+(autoload 'projectile-project-root "projectile")
+
+(defconst lj-counsel--escape-characters '("$" "*")
+  "Characters to escape for input into counsel.")
+
+(defun lj-counsel--escape-character-p (char)
+  "Determines if a CHAR should be escaped for input into counsel."
+  (-contains-p lj-counsel--escape-characters char))
+
+(defun lj-counsel--escape-character (char)
+  "Escape a CHAR for input into counsel."
+  (concat "\\" char))
+
+(defun lj-counsel--escape-string (string)
+  "Escape STRING for input into counsel."
+  (-if-let* ((str-list (split-string string "" t))
+             (escaped-str-list (-map-when #'lj-counsel--escape-character-p #'lj-counsel--escape-character str-list)))
+      (s-join "" escaped-str-list)
+    string))
+
+(defun lj--region-or-symbol-at-pt ()
+  "Get symbol at point or text in selected region."
+  (if (region-active-p)
+      (buffer-substring-no-properties (region-beginning) (region-end))
+    (thing-at-point 'symbol t)))
+
+(defun lj--region-or-symbol ()
+  "Get text or symbol at point, or an empty string if neither exist."
+  (if-let* ((text (lj--region-or-symbol-at-pt)))
+      text
+    ""))
+
+(defun lj-swiper-region-or-symbol (input)
+  "Run `swiper' with INPUT, which is either the selected region or the symbol at point."
+  (interactive (list (lj--region-or-symbol)))
+  (swiper input))
+
+(defun lj-counsel-project-region-or-symbol (input)
+  "Search project for INPUT, which is either the selected region or the symbol at point."
+  (interactive (list (lj--region-or-symbol)))
+  (counsel-rg (lj-counsel--escape-string input) (projectile-project-root)))
+
+(defun lj-counsel-region-or-symbol (start-dir input)
+  "Search START-DIR for INPUT which is either the selected region or symbol at point."
+  (interactive (list (read-directory-name "Start from directory: ")
+                     (lj--region-or-symbol)))
+  (counsel-rg (lj-counsel--escape-string input) start-dir))
 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
@@ -112,7 +161,7 @@ current window."
 (add-to-list 'load-path (concat user-emacs-directory "config"))
 (add-to-list 'load-path (concat user-emacs-directory "lisp"))
 
-(set-frame-font "Source Code Pro 13")
+(set-frame-font "Fira Code 12")
 
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
@@ -362,6 +411,7 @@ current window."
   :ensure t
   :config
   (lj-leader-def
+    "sP" 'lj-counsel-project-region-or-symbol
     "pf" 'counsel-projectile-find-file
     "pd" 'counsel-projectile-find-dir
     "pb" 'counsel-projectile-switch-to-buffer
@@ -526,6 +576,20 @@ T - tag prefix
 
 (use-package protobuf-mode
   :ensure t)
+
+(use-package php-mode
+  :ensure t
+  :mode ("\\.php\\'" . php-mode))
+
+(use-package company-php
+  :ensure t
+  :init
+  (progn
+    (add-hook 'php-mode-hook 'ac-php-core-eldoc-setup)
+    (add-hook 'php-mode-hook
+			  (lambda ()
+				(set (make-local-variable 'company-backends) '(company-php))
+				(company-mode)))))
 
 (provide 'init)
 
