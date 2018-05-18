@@ -438,15 +438,14 @@ current window."
       (interactive)
       (lj-go-run-tests ""))
 
-    (push (cons "*go test*" '(:dedicated t :position bottom :stick t :noselect t :height 0.4))
-          popwin:special-display-config)
+    (push '("*go test*" :dedicated t :position bottom :stick t :noselect t :height 0.25 :tail t) popwin:special-display-config)
 
-	;; TODO: integrate with general definer
-	(which-key-add-major-mode-key-based-replacements 'go-mode
-	  "SPC mr" "refactor"
-	  "SPC mg" "goto"
-	  "SPC mh" "help"
-	  "SPC mt" "test")
+    ;; TODO: integrate with general definer
+    (which-key-add-major-mode-key-based-replacements 'go-mode
+      "SPC mr" "refactor"
+      "SPC mg" "goto"
+      "SPC mh" "help"
+      "SPC mt" "test")
 
     (lj-local-leader-def
       :keymaps 'go-mode-map
