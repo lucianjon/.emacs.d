@@ -135,13 +135,13 @@ current window."
 
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
-    mouse-yank-at-point t
-    require-final-newline t
-    visible-bell t
-    load-prefer-newer t
-    save-place-file (concat user-emacs-directory "places")
-    backup-directory-alist `(("." . ,(concat user-emacs-directory
-                                             "backups"))))
+      mouse-yank-at-point t
+      require-final-newline t
+      visible-bell t
+      load-prefer-newer t
+      save-place-file (concat user-emacs-directory "places")
+      backup-directory-alist `(("." . ,(concat user-emacs-directory
+                                               "backups"))))
 
 (define-key minibuffer-local-map (kbd "<escape>") #'keyboard-escape-quit)
 (define-key minibuffer-local-ns-map (kbd "<escape>") #'keyboard-escape-quit)
@@ -163,6 +163,13 @@ current window."
 
 (add-to-list 'load-path (concat user-emacs-directory "config"))
 (add-to-list 'load-path (concat user-emacs-directory "lisp"))
+
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 (set-frame-font "Fira Code 12")
 
@@ -444,7 +451,7 @@ current window."
       (interactive)
       (lj-go-run-tests ""))
 
-    (push '("*go test*" :dedicated t :position bottom :stick t :noselect t :height 0.25 :tail t) popwin:special-display-config)
+    (push '("*go test*" :dedicated t :position bottom :stick t :noselect t :height 0.25) popwin:special-display-config)
 
     ;; TODO: integrate with general definer
     (which-key-add-major-mode-key-based-replacements 'go-mode
@@ -463,7 +470,7 @@ current window."
   :after go-mode
   :config
   (lj-local-leader-def
-	:keymaps 'go-mode-map
+    :keymaps 'go-mode-map
     "rn" 'go-rename))
 
 (use-package company-go
@@ -474,9 +481,9 @@ current window."
     (setq company-idle-delay .2)
     (setq company-echo-delay 0)
     (add-hook 'go-mode-hook
-			  (lambda ()
-				(set (make-local-variable 'company-backends) '(company-go))
-				(company-mode)))))
+	      (lambda ()
+		(set (make-local-variable 'company-backends) '(company-go))
+		(company-mode)))))
 
 (use-package go-eldoc
   :ensure t
@@ -489,19 +496,19 @@ current window."
   :after go-mode
   :init
   (lj-local-leader-def
-	:keymaps 'go-mode-map
-	"rf" 'go-tag-add
-	"rF" 'go-tag-remove))
+    :keymaps 'go-mode-map
+    "rf" 'go-tag-add
+    "rF" 'go-tag-remove))
 
 (use-package godoctor
   :ensure t
   :init
   (progn
-	(lj-local-leader-def
-	  :keymaps 'go-mode-map
-	  "re" 'godoctor-extract
-	  "rt" 'godoctor-toggle
-	  "rd" 'godoctor-godoc)))
+    (lj-local-leader-def
+      :keymaps 'go-mode-map
+      "re" 'godoctor-extract
+      "rt" 'godoctor-toggle
+      "rd" 'godoctor-godoc)))
 
 (use-package go-guru
   :ensure t
@@ -509,7 +516,7 @@ current window."
   :init
   (which-key-add-major-mode-key-based-replacements 'go-mode "SPC mf" "guru")
   (lj-local-leader-def
-	:keymaps 'go-mode-map
+    :keymaps 'go-mode-map
     "fd" 'go-guru-describe
     "ff" 'go-guru-freevars
     "fi" 'go-guru-implements
@@ -521,7 +528,7 @@ current window."
     "fe" 'go-guru-whicherrs
     "f<" 'go-guru-callers
     "f>" 'go-guru-callees
-	"fo" 'go-guru-set-scope))
+    "fo" 'go-guru-set-scope))
 
 (use-package hydra
   :ensure t)
@@ -592,9 +599,9 @@ T - tag prefix
   (progn
     (add-hook 'php-mode-hook 'ac-php-core-eldoc-setup)
     (add-hook 'php-mode-hook
-			  (lambda ()
-				(set (make-local-variable 'company-backends) '(company-php))
-				(company-mode)))))
+	      (lambda ()
+		(set (make-local-variable 'company-backends) '(company-php))
+		(company-mode)))))
 
 (provide 'init)
 
