@@ -27,6 +27,9 @@
 
 (setq tab-width 2)
 
+(setq compilation-scroll-output t)
+(set-fringe-mode 0)
+
 (setq scroll-step           1
       scroll-margin         0
       scroll-conservatively 10000)
@@ -345,10 +348,13 @@ current window."
 ;; Mac OSX specific settings
 (if (eq system-type 'darwin)
     (progn
+      (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+      (add-to-list 'default-frame-alist '(ns-appearance . 'nil))
       (set-frame-font "Source Code Pro 16")
       (setq mac-command-modifier 'meta)
       (setq mac-right-option-modifier 'control)
-      (setq dired-use-ls-dired nil)))
+      (setq dired-use-ls-dired nil)
+      (setq frame-title-format nil)))
 
 (use-package ivy
   :ensure t
@@ -431,7 +437,7 @@ current window."
 
     (defun lj-go-run-tests (args)
       (interactive)
-      (compilation-start (concat "go test -v" args " " "")
+      (compilation-start (concat "go test" args " " "")
                          nil (lambda (n) "*go test*") nil))
 
     (defun lj-go-run-package-tests ()
