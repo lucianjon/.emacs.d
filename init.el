@@ -48,7 +48,7 @@
 (show-paren-mode t)
 (setq-default fill-column 80)
 (add-hook 'after-save-hook
-	  'executable-make-buffer-file-executable-if-script-p)
+		  'executable-make-buffer-file-executable-if-script-p)
 (global-auto-revert-mode t)
 
 (defun lj-comment-or-uncomment-region-or-line ()
@@ -481,9 +481,9 @@ current window."
     (setq company-idle-delay .2)
     (setq company-echo-delay 0)
     (add-hook 'go-mode-hook
-	      (lambda ()
-		(set (make-local-variable 'company-backends) '(company-go))
-		(company-mode)))))
+			  (lambda ()
+				(set (make-local-variable 'company-backends) '(company-go))
+				(company-mode)))))
 
 (use-package go-eldoc
   :ensure t
@@ -509,6 +509,13 @@ current window."
       "re" 'godoctor-extract
       "rt" 'godoctor-toggle
       "rd" 'godoctor-godoc)))
+
+(use-package go-keyify
+  :init
+  (progn
+    (lj-local-leader-def
+      :keymaps 'go-mode-map
+      "rk" 'go-keyify)))
 
 (use-package go-guru
   :ensure t
@@ -599,9 +606,9 @@ T - tag prefix
   (progn
     (add-hook 'php-mode-hook 'ac-php-core-eldoc-setup)
     (add-hook 'php-mode-hook
-	      (lambda ()
-		(set (make-local-variable 'company-backends) '(company-php))
-		(company-mode)))))
+			  (lambda ()
+				(set (make-local-variable 'company-backends) '(company-php))
+				(company-mode)))))
 
 (provide 'init)
 
