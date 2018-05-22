@@ -613,8 +613,6 @@ T - tag prefix
 		(company-mode)))))
 
 (set-face-attribute 'mode-line nil :box nil :overline nil)
-;; (set-face-attribute 'mode-line nil
-;; :box '(:line-width 3))
 
 (provide 'init)
 
