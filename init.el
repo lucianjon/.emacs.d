@@ -27,6 +27,9 @@
 
 (setq tab-width 2)
 
+(setq user-full-name "Lucian Jones")
+(setq user-mail-address "lucianm.jones@gmail.com")
+
 (setq compilation-scroll-output t)
 (set-fringe-mode 0)
 
@@ -48,7 +51,7 @@
 (show-paren-mode t)
 (setq-default fill-column 80)
 (add-hook 'after-save-hook
-		  'executable-make-buffer-file-executable-if-script-p)
+	  'executable-make-buffer-file-executable-if-script-p)
 (global-auto-revert-mode t)
 
 (defun lj-comment-or-uncomment-region-or-line ()
@@ -480,9 +483,9 @@ current window."
     (setq company-idle-delay .2)
     (setq company-echo-delay 0)
     (add-hook 'go-mode-hook
-			  (lambda ()
-				(set (make-local-variable 'company-backends) '(company-go))
-				(company-mode)))))
+	      (lambda ()
+		(set (make-local-variable 'company-backends) '(company-go))
+		(company-mode)))))
 
 (use-package go-eldoc
   :ensure t
@@ -605,9 +608,9 @@ T - tag prefix
   (progn
     (add-hook 'php-mode-hook 'ac-php-core-eldoc-setup)
     (add-hook 'php-mode-hook
-			  (lambda ()
-				(set (make-local-variable 'company-backends) '(company-php))
-				(company-mode)))))
+	      (lambda ()
+		(set (make-local-variable 'company-backends) '(company-php))
+		(company-mode)))))
 
 (set-face-attribute 'mode-line nil :box nil :overline nil)
 ;; (set-face-attribute 'mode-line nil
