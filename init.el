@@ -192,7 +192,6 @@ current window."
 
 (use-package doom-modeline
   :config
-  :config
   (+doom-modeline|init))
 
 (use-package smex
@@ -609,6 +608,10 @@ T - tag prefix
 			  (lambda ()
 				(set (make-local-variable 'company-backends) '(company-php))
 				(company-mode)))))
+
+(set-face-attribute 'mode-line nil :box nil :overline nil)
+;; (set-face-attribute 'mode-line nil
+;; :box '(:line-width 3))
 
 (provide 'init)
 

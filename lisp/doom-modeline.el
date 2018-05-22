@@ -63,7 +63,7 @@
 ;; Variables
 ;;
 
-(defvar +doom-modeline-height 39
+(defvar +doom-modeline-height 30
   "How tall the mode-line should be (only respected in GUI emacs).")
 
 (defvar +doom-modeline-bar-width 9
