@@ -359,7 +359,7 @@ current window."
     (progn
       (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
       (add-to-list 'default-frame-alist '(ns-appearance . 'nil))
-      (set-frame-font "Source Code Pro 16")
+      (set-frame-font "Source Code Pro 14")
       (setq mac-command-modifier 'meta)
       (setq mac-right-option-modifier 'control)
       (setq dired-use-ls-dired nil)
