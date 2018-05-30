@@ -445,8 +445,11 @@ current window."
 
     (defun lj-go-run-tests (args)
       (interactive)
-      (compilation-start (concat "go test" args " " "")
-                         nil (lambda (n) "*go test*") nil))
+      (if (file-exists-p "Makefile")
+          (compilation-start (concat "make test" args " " "")
+                             nil (lambda (n) "*go test*") nil)
+        (compilation-start (concat "go test" args " " "")
+                           nil (lambda (n) "*go test*") nil)))
 
     (defun lj-go-run-package-tests ()
       (interactive)
