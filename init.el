@@ -326,6 +326,7 @@ current window."
   "wd"  '(evil-window-next :which-key "next window")
   "w/"  '(evil-window-vsplit :which-key "vertical split window")
   "wc"  '(evil-window-delete :which-key "delete window")
+  "wo"  '(delete-other-windows :which-key "delete other")
   "tm"  '(toggle-frame-maximized :which-key "maximise window"))
 
 (general-create-definer lj-local-leader-def
