@@ -51,8 +51,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (show-paren-mode t)
 (setq-default fill-column 80)
-(add-hook 'after-save-hook
-		  'executable-make-buffer-file-executable-if-script-p)
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 (global-auto-revert-mode t)
 
 (defun lj-comment-or-uncomment-region-or-line ()
@@ -303,7 +302,7 @@ current window."
     (setq highlight-thing-case-sensitive-p t)
 
     (advice-add 'highlight-thing-should-highlight-p :filter-return
-				#'lj-highlight-thing--should-highlight-p)))
+                #'lj-highlight-thing--should-highlight-p)))
 
 (use-package general
   :ensure t
@@ -481,30 +480,31 @@ current window."
 
     (add-hook 'before-save-hook 'gofmt-before-save)
 
+	;; TODO: make this function a little nicer
     (defun lj-go-run-tests (args)
       (interactive)
       (if (file-exists-p "Makefile")
-		  (let ((make-args (if (string= "" args)
-							   ""
-							 (concat "GOTEST_ARGS=" args))))
-			(compilation-start (concat "make test" " " make-args " " "")
-							   nil (lambda (n) "*go test*") nil))
-		(compilation-start (concat "go test" args " " "")
-						   nil (lambda (n) "*go test*") nil)))
+          (let ((make-args (if (string= "" args)
+                               ""
+                             (concat "GOTEST_ARGS=" args))))
+            (compilation-start (concat "make test" " " make-args " " "")
+                               nil (lambda (n) "*go test*") nil))
+        (compilation-start (concat "go test" args " " "")
+                           nil (lambda (n) "*go test*") nil)))
 
-	(defun lj-go-run-package-tests ()
+    (defun lj-go-run-package-tests ()
       (interactive)
       (lj-go-run-tests ""))
 
-	(defun lj-go-run-test-current-function ()
+    (defun lj-go-run-test-current-function ()
       (interactive)
       (if (string-match "_test\\.go" buffer-file-name)
           (save-excursion
-			(re-search-backward "^func[ ]+\\(([[:alnum:]]*?[ ]?[*]?[[:alnum:]]+)[ ]+\\)?\\(Test[[:alnum:]_]+\\)(.*)")
-			(lj-go-run-tests (concat "-run" "='" (match-string-no-properties 2) "$'")))
-		(message "Must be in a _test.go file to run go-run-test-current-function")))
+            (re-search-backward "^func[ ]+\\(([[:alnum:]]*?[ ]?[*]?[[:alnum:]]+)[ ]+\\)?\\(Test[[:alnum:]_]+\\)(.*)")
+            (lj-go-run-tests (concat "-run" "='" (match-string-no-properties 2) "$'")))
+        (message "Must be in a _test.go file to run go-run-test-current-function")))
 
-	(push '("*go test*" :dedicated t :position bottom :stick t :noselect t :height 0.25) popwin:special-display-config)
+    (push '("*go test*" :dedicated t :position bottom :stick t :noselect t :height 0.25) popwin:special-display-config)
 
     ;; TODO: integrate with general definer
     (which-key-add-major-mode-key-based-replacements 'go-mode
