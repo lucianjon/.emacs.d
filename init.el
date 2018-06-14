@@ -25,7 +25,7 @@
 
 (setq ring-bell-function 'ignore)
 
-(setq tab-width 2)
+(setq-default indent-tabs-mode nil)
 
 (setq user-full-name "Lucian Jones")
 (setq user-mail-address "lucianm.jones@gmail.com")
@@ -52,7 +52,7 @@
 (show-paren-mode t)
 (setq-default fill-column 80)
 (add-hook 'after-save-hook
-	  'executable-make-buffer-file-executable-if-script-p)
+		  'executable-make-buffer-file-executable-if-script-p)
 (global-auto-revert-mode t)
 
 (defun lj-comment-or-uncomment-region-or-line ()
@@ -475,6 +475,7 @@ current window."
   :config
   (progn
     (setq gofmt-command "goimports")
+    (setq godoc-at-point-function 'godoc-gogetdoc)
     (setq-local tab-width 4)
     (setq-local indent-tabs-mode t)
 
@@ -483,15 +484,27 @@ current window."
     (defun lj-go-run-tests (args)
       (interactive)
       (if (file-exists-p "Makefile")
-          (compilation-start "make test" nil (lambda (n) "*go test*") nil)
-	(compilation-start (concat "go test" args " " "")
-                           nil (lambda (n) "*go test*") nil)))
+		  (let ((make-args (if (string= "" args)
+							   ""
+							 (concat "GOTEST_ARGS=" args))))
+			(compilation-start (concat "make test" " " make-args " " "")
+							   nil (lambda (n) "*go test*") nil))
+		(compilation-start (concat "go test" args " " "")
+						   nil (lambda (n) "*go test*") nil)))
 
-    (defun lj-go-run-package-tests ()
+	(defun lj-go-run-package-tests ()
       (interactive)
       (lj-go-run-tests ""))
 
-    (push '("*go test*" :dedicated t :position bottom :stick t :noselect t :height 0.25) popwin:special-display-config)
+	(defun lj-go-run-test-current-function ()
+      (interactive)
+      (if (string-match "_test\\.go" buffer-file-name)
+          (save-excursion
+			(re-search-backward "^func[ ]+\\(([[:alnum:]]*?[ ]?[*]?[[:alnum:]]+)[ ]+\\)?\\(Test[[:alnum:]_]+\\)(.*)")
+			(lj-go-run-tests (concat "-run" "='" (match-string-no-properties 2) "$'")))
+		(message "Must be in a _test.go file to run go-run-test-current-function")))
+
+	(push '("*go test*" :dedicated t :position bottom :stick t :noselect t :height 0.25) popwin:special-display-config)
 
     ;; TODO: integrate with general definer
     (which-key-add-major-mode-key-based-replacements 'go-mode
@@ -503,7 +516,8 @@ current window."
     (lj-local-leader-def
       :keymaps 'go-mode-map
       "gg" 'godef-jump
-      "tp" 'lj-go-run-package-tests)))
+      "tp" 'lj-go-run-package-tests
+      "tf" 'lj-go-run-test-current-function)))
 
 (use-package go-rename
   :ensure t
@@ -522,9 +536,9 @@ current window."
     (setq company-idle-delay .2)
     (setq company-echo-delay 0)
     (add-hook 'go-mode-hook
-	      (lambda ()
-		(set (make-local-variable 'company-backends) '(company-go))
-		(company-mode)))))
+			  (lambda ()
+				(set (make-local-variable 'company-backends) '(company-go))
+				(company-mode)))))
 
 (use-package go-eldoc
   :ensure t
@@ -578,6 +592,19 @@ current window."
     "f>" 'go-guru-callees
     "fo" 'go-guru-set-scope))
 
+(use-package go-fill-struct
+  :ensure t
+  :init
+  (lj-local-leader-def
+    :keymaps 'go-mode-map))
+
+(use-package go-impl
+  :ensure t
+  :init
+  (lj-local-leader-def
+    :keymaps 'go-mode-map
+    "ri" 'go-impl))
+
 (use-package protobuf-mode
   :ensure t)
 
@@ -591,9 +618,9 @@ current window."
   (progn
     (add-hook 'php-mode-hook 'ac-php-core-eldoc-setup)
     (add-hook 'php-mode-hook
-	      (lambda ()
-		(set (make-local-variable 'company-backends) '(company-php))
-		(company-mode)))))
+			  (lambda ()
+				(set (make-local-variable 'company-backends) '(company-php))
+				(company-mode)))))
 
 (use-package scala-mode
   :ensure t
