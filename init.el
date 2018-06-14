@@ -596,7 +596,8 @@ current window."
   :ensure t
   :init
   (lj-local-leader-def
-    :keymaps 'go-mode-map))
+    :keymaps 'go-mode-map
+	"rs" 'go-fill-struct))
 
 (use-package go-impl
   :ensure t
