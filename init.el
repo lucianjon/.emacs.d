@@ -460,6 +460,7 @@ current window."
 (use-package counsel-projectile
   :ensure t
   :config
+  (setq counsel-projectile-switch-project-action 'magit-status)
   (lj-leader-def
     "sP" 'lj-counsel-project-region-or-symbol
     "pf" 'counsel-projectile-find-file
