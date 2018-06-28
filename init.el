@@ -221,6 +221,7 @@ current window."
   :config
   (progn
     (setq-default evil-escape-key-sequence "jk")
+    (setq-default evil-escape-delay 0.07)
     (evil-escape-mode)))
 
 (use-package which-key
@@ -627,6 +628,10 @@ current window."
 (use-package scala-mode
   :ensure t
   :mode ("\\.scala\\'" . scala-mode))
+
+(use-package dockerfile-mode
+  :ensure t
+  :mode ("\\Dockerfile\\'" . dockerfile-mode))
 
 (use-package markdown-mode
   :ensure t
