@@ -482,7 +482,7 @@ current window."
 
     (add-hook 'before-save-hook 'gofmt-before-save)
 
-	;; TODO: make this function a little nicer
+    ;; TODO: make this function a little nicer
     (defun lj-go-run-tests (args)
       (interactive)
       (if (file-exists-p "Makefile")
@@ -549,9 +549,9 @@ current window."
     (setq company-idle-delay .2)
     (setq company-echo-delay 0)
     (add-hook 'go-mode-hook
-			  (lambda ()
-				(set (make-local-variable 'company-backends) '(company-go))
-				(company-mode)))))
+	      (lambda ()
+		(set (make-local-variable 'company-backends) '(company-go))
+		(company-mode)))))
 
 (use-package go-eldoc
   :ensure t
@@ -610,7 +610,7 @@ current window."
   :init
   (lj-local-leader-def
     :keymaps 'go-mode-map
-	"rs" 'go-fill-struct))
+    "rs" 'go-fill-struct))
 
 (use-package go-impl
   :ensure t
@@ -632,9 +632,9 @@ current window."
   (progn
     (add-hook 'php-mode-hook 'ac-php-core-eldoc-setup)
     (add-hook 'php-mode-hook
-			  (lambda ()
-				(set (make-local-variable 'company-backends) '(company-php))
-				(company-mode)))))
+	      (lambda ()
+		(set (make-local-variable 'company-backends) '(company-php))
+		(company-mode)))))
 
 (use-package scala-mode
   :ensure t
