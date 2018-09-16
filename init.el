@@ -529,6 +529,17 @@ current window."
     :keymaps 'go-mode-map
     "rn" 'go-rename))
 
+(use-package flycheck-golangci-lint
+  :ensure t
+  :config
+  (setq flycheck-disabled-checkers '(go-gofmt
+                                     go-golint
+                                     go-vet
+                                     go-build
+                                     go-test
+                                     go-errcheck))
+  :hook (go-mode . flycheck-golangci-lint-setup))
+
 (use-package company-go
   :ensure t
   :after go-mode
