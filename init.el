@@ -27,6 +27,8 @@
 
 (setq-default indent-tabs-mode nil)
 
+(setq-default js-indent-level 2)
+
 (setq user-full-name "Lucian Jones")
 (setq user-mail-address "lucianm.jones@gmail.com")
 
@@ -357,6 +359,15 @@ current window."
   :ensure t
   :init (global-flycheck-mode))
 
+(use-package wgrep
+  :ensure t
+  :commands (wgrep-setup)
+  :init
+  (add-hook 'grep-setup-hook #'wgrep-stup)
+  :config
+  (progn
+    (setq wgrep-auto-save-buffer t)))
+
 (use-package popwin
   :ensure t
   :config (popwin-mode 1))
@@ -395,7 +406,7 @@ current window."
     (progn
       (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
       (add-to-list 'default-frame-alist '(ns-appearance . 'nil))
-      (set-frame-font "Hack 15")
+      (set-frame-font "Source Code Pro 15")
       (setq mac-command-modifier 'meta)
       (setq mac-right-option-modifier 'control)
       (setq dired-use-ls-dired nil)
@@ -463,16 +474,28 @@ current window."
   :config
   (setq counsel-projectile-switch-project-action 'magit-status)
   (lj-leader-def
-    "sP" 'lj-counsel-project-region-or-symbol
     "pf" 'counsel-projectile-find-file
     "pd" 'counsel-projectile-find-dir
     "pb" 'counsel-projectile-switch-to-buffer
     "pp" 'counsel-projectile-switch-project
     "/"  'counsel-projectile-ag))
 
+(use-package lj-ivy-commands
+  :after ivy
+  :commands (lj-swiper-region-or-symbol
+             lj-counsel-project-region-or-symbol
+             lj-counsel-region-or-symbol)
+  :init
+  (lj-leader-def
+    "sS" '(lj-swiper-region-or-symbol :wk "search in buffer")
+    "sP" '(lj-counsel-project-region-or-symbol :wk "search in project")
+    "sF" '(lj-counsel-region-or-symbol :wk "search in dir")))
+
 (use-package go-mode
   :ensure t
   :mode ("\\.go\\'" . go-mode)
+  :hook
+  (go-mode . lsp)
   :config
   (progn
     (setq gofmt-command "goimports")
@@ -521,6 +544,19 @@ current window."
       "tp" 'lj-go-run-package-tests
       "tf" 'lj-go-run-test-current-function)))
 
+(use-package lsp-mode
+  :ensure t
+  :init
+  (setq lsp-prefer-flymake nil))
+
+(use-package lsp-ui
+  :ensure t
+  :after lsp-mode
+  :init
+  (progn
+    (setq lsp-ui-doc-enable nil)
+    (setq lsp-ui-sideline-enable nil)))
+
 (use-package go-rename
   :ensure t
   :after go-mode
@@ -540,18 +576,18 @@ current window."
                                      go-errcheck))
   :hook (go-mode . flycheck-golangci-lint-setup))
 
-(use-package company-go
-  :ensure t
-  :after go-mode
-  :config
-  (progn
-    (setq company-go-show-annotation t)
-    (setq company-idle-delay .2)
-    (setq company-echo-delay 0)
-    (add-hook 'go-mode-hook
-	      (lambda ()
-		(set (make-local-variable 'company-backends) '(company-go))
-		(company-mode)))))
+;; (use-package company-go
+;;   :ensure t
+;;   :after go-mode
+;;   :config
+;;   (progn
+;;     (setq company-go-show-annotation t)
+;;     (setq company-idle-delay .2)
+;;     (setq company-echo-delay 0)
+;;     (add-hook 'go-mode-hook
+;; 	      (lambda ()
+;; 		(set (make-local-variable 'company-backends) '(company-go))
+;; 		(company-mode)))))
 
 (use-package go-eldoc
   :ensure t
@@ -639,6 +675,11 @@ current window."
 (use-package scala-mode
   :ensure t
   :mode ("\\.scala\\'" . scala-mode))
+
+
+(use-package terraform-mode
+  :ensure t
+  :mode ("\\.tf\\'" . terraform-mode))
 
 (use-package dockerfile-mode
   :ensure t
