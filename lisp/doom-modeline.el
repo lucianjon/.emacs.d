@@ -110,6 +110,11 @@ file-name => comint.el")
   "Face used for the filename part of the mode-line buffer path."
   :group '+doom-modeline)
 
+(defface doom-modeline-project-root-dir
+  '((t (:weight light)))
+  "Face used for the dir part of the mode-line buffer path."
+  :group '+doom-modeline)
+
 (defface doom-modeline-buffer-modified
   '((t (:inherit (error bold) :background nil)))
   "Face used for the 'unsaved' symbol in the mode-line."

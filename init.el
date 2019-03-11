@@ -491,6 +491,47 @@ current window."
     "sP" '(lj-counsel-project-region-or-symbol :wk "search in project")
     "sF" '(lj-counsel-region-or-symbol :wk "search in dir")))
 
+(use-package lsp-mode
+  :ensure t
+  :init
+  (setq lsp-prefer-flymake nil))
+
+(use-package lsp-ui
+  :ensure t
+  :after lsp-mode
+  :init
+  (progn
+    (setq lsp-ui-doc-enable nil)
+    (setq lsp-ui-sideline-enable nil)))
+
+(use-package company
+  :config
+  (add-hook 'after-init-hook 'global-company-mode)
+  :general
+  (:keymaps 'company-active-map
+            "<tab>" #'company-complete
+            "S-<return>" #'company-complete))
+
+(use-package company-lsp
+  :ensure t
+  :after lsp-mode
+  :config
+  (push 'company-lsp company-backends))
+
+;; (use-package company-go
+;;   :ensure t
+;;   :after go-mode
+;;   :config
+;;   (progn
+;;     (setq company-go-show-annotation t)
+;;     (setq company-idle-delay .2)
+;;     (setq company-echo-delay 0)
+;;     (add-hook 'go-mode-hook
+;;  	      (lambda ()
+;;  		(set (make-local-variable 'company-backends) '(company-go))
+;;  		(company-mode)))))
+
+
 (use-package go-mode
   :ensure t
   :mode ("\\.go\\'" . go-mode)
@@ -540,22 +581,9 @@ current window."
 
     (lj-local-leader-def
       :keymaps 'go-mode-map
-      "gg" 'godef-jump
+      "gg" 'lsp-find-definition
       "tp" 'lj-go-run-package-tests
       "tf" 'lj-go-run-test-current-function)))
-
-(use-package lsp-mode
-  :ensure t
-  :init
-  (setq lsp-prefer-flymake nil))
-
-(use-package lsp-ui
-  :ensure t
-  :after lsp-mode
-  :init
-  (progn
-    (setq lsp-ui-doc-enable nil)
-    (setq lsp-ui-sideline-enable nil)))
 
 (use-package go-rename
   :ensure t
@@ -575,19 +603,6 @@ current window."
                                      go-test
                                      go-errcheck))
   :hook (go-mode . flycheck-golangci-lint-setup))
-
-;; (use-package company-go
-;;   :ensure t
-;;   :after go-mode
-;;   :config
-;;   (progn
-;;     (setq company-go-show-annotation t)
-;;     (setq company-idle-delay .2)
-;;     (setq company-echo-delay 0)
-;;     (add-hook 'go-mode-hook
-;; 	      (lambda ()
-;; 		(set (make-local-variable 'company-backends) '(company-go))
-;; 		(company-mode)))))
 
 (use-package go-eldoc
   :ensure t
