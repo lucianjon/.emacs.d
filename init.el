@@ -478,7 +478,7 @@ current window."
     "pd" 'counsel-projectile-find-dir
     "pb" 'counsel-projectile-switch-to-buffer
     "pp" 'counsel-projectile-switch-project
-    "/"  'counsel-projectile-ag))
+    "/"  'counsel-projectile-rg))
 
 (use-package lj-ivy-commands
   :after ivy
@@ -490,6 +490,11 @@ current window."
     "sS" '(lj-swiper-region-or-symbol :wk "search in buffer")
     "sP" '(lj-counsel-project-region-or-symbol :wk "search in project")
     "sF" '(lj-counsel-region-or-symbol :wk "search in dir")))
+
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1))
 
 (use-package lsp-mode
   :ensure t
@@ -509,14 +514,24 @@ current window."
   (add-hook 'after-init-hook 'global-company-mode)
   :general
   (:keymaps 'company-active-map
-            "<tab>" #'company-complete
-            "S-<return>" #'company-complete))
+            "TAB" #'company-complete-selection
+            "<tab>" #'company-complete-selection
+            "S-<return>" #'company-complete-selection))
 
 (use-package company-lsp
   :ensure t
-  :after lsp-mode
+  :after (company lsp-mode)
+  :defines company-lsp
+  :preface
+  (progn
+    (defun lj-company--lsp-mode-p ()
+      (and (bound-and-true-p lsp-mode)
+           (bound-and-true-p company-mode)))
+    (defun lj-company--setup-lsp-backend ()
+      (when (lj-company--lsp-mode-p)
+        (set (make-local-variable 'company-backends) '(company-lsp)))))
   :config
-  (push 'company-lsp company-backends))
+  (add-hook 'company-mode-hook #'lj-company--setup-lsp-backend))
 
 ;; (use-package company-go
 ;;   :ensure t
@@ -535,12 +550,24 @@ current window."
 (use-package go-mode
   :ensure t
   :mode ("\\.go\\'" . go-mode)
+  :preface
+  (defun lj-modules-p ()
+    "Return non-nil if this buffer is part of a Go Modules project."
+    (locate-dominating-file default-directory "go.mod"))
+
+  (defun lj-setup-go ()
+    "Run setup for Go buffers."
+    (progn
+      (if (lj-modules-p)
+          (setenv "GO111MODULE" "on")
+        (setenv "GO111MODULE" "auto"))
+      (lsp)))
   :hook
-  (go-mode . lsp)
+  (go-mode . lj-setup-go)
   :config
   (progn
     (setq gofmt-command "goimports")
-    (setq godoc-at-point-function 'godoc-gogetdoc)
+    ;; (setq godoc-at-point-function 'godoc-gogetdoc)
     (setq-local tab-width 4)
     (setq-local indent-tabs-mode t)
 
@@ -677,15 +704,15 @@ current window."
   :ensure t
   :mode ("\\.php\\'" . php-mode))
 
-(use-package company-php
-  :ensure t
-  :init
-  (progn
-    (add-hook 'php-mode-hook 'ac-php-core-eldoc-setup)
-    (add-hook 'php-mode-hook
-	      (lambda ()
-		(set (make-local-variable 'company-backends) '(company-php))
-		(company-mode)))))
+;; (use-package company-php
+;;   :ensure t
+;;   :init
+;;   (progn
+;;     (add-hook 'php-mode-hook 'ac-php-core-eldoc-setup)
+;;     (add-hook 'php-mode-hook
+;; 	      (lambda ()
+;; 		(set (make-local-variable 'company-backends) '(company-php))
+;; 		(company-mode)))))
 
 (use-package scala-mode
   :ensure t
