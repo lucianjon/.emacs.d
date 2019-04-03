@@ -1,0 +1,67 @@
+;;; lj-ivy-commands.el --- Misc commands for Ivy.  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2017 Raghuvir Kasturi
+
+;; Author: Raghuvir Kasturi <raghuvir.kasturi@gmail.com>
+
+;;; Commentary:
+
+;;; Code:
+
+(require 'counsel)
+(require 'swiper)
+(require 'subr-x)
+(require 'dash)
+(require 's)
+
+(autoload 'projectile-project-root "projectile")
+
+(defconst lj-counsel--escape-characters '("$" "*")
+  "Characters to escape for input into counsel.")
+
+(defun lj-counsel--escape-character-p (char)
+  "Determines if a CHAR should be escaped for input into counsel."
+  (-contains-p lj-counsel--escape-characters char))
+
+(defun lj-counsel--escape-character (char)
+  "Escape a CHAR for input into counsel."
+  (concat "\\" char))
+
+(defun lj-counsel--escape-string (string)
+  "Escape STRING for input into counsel."
+  (-if-let* ((str-list (split-string string "" t))
+             (escaped-str-list (-map-when #'lj-counsel--escape-character-p #'lj-counsel--escape-character str-list)))
+      (s-join "" escaped-str-list)
+    string))
+
+(defun lj--region-or-symbol-at-pt ()
+  "Get symbol at point or text in selected region."
+  (if (region-active-p)
+      (buffer-substring-no-properties (region-beginning) (region-end))
+    (thing-at-point 'symbol t)))
+
+(defun lj--region-or-symbol ()
+  "Get text or symbol at point, or an empty string if neither exist."
+  (if-let* ((text (lj--region-or-symbol-at-pt)))
+      text
+    ""))
+
+(defun lj-swiper-region-or-symbol (input)
+  "Run `swiper' with INPUT, which is either the selected region or the symbol at point."
+  (interactive (list (lj--region-or-symbol)))
+  (swiper input))
+
+(defun lj-counsel-project-region-or-symbol (input)
+  "Search project for INPUT, which is either the selected region or the symbol at point."
+  (interactive (list (lj--region-or-symbol)))
+  (counsel-rg (lj-counsel--escape-string input) (projectile-project-root)))
+
+(defun lj-counsel-region-or-symbol (start-dir input)
+  "Search START-DIR for INPUT which is either the selected region or symbol at point."
+  (interactive (list (read-directory-name "Start from directory: ")
+                     (lj--region-or-symbol)))
+  (counsel-rg (lj-counsel--escape-string input) start-dir))
+
+(provide 'lj-ivy-commands)
+
+;;; lj-ivy-commands.el ends here

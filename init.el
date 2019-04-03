@@ -329,7 +329,9 @@ current window."
   "w/"  '(evil-window-vsplit :which-key "vertical split window")
   "wc"  '(evil-window-delete :which-key "delete window")
   "wo"  '(delete-other-windows :which-key "delete other")
-  "tm"  '(toggle-frame-maximized :which-key "maximise window"))
+  "tm"  '(toggle-frame-maximized :which-key "maximise window")
+
+  "im" '(lsp-ui-imenu :which-key "open lsp imenu"))
 
 (general-create-definer lj-local-leader-def
   :states 'motion
@@ -399,7 +401,8 @@ current window."
   :ensure t
   :config
   (exec-path-from-shell-initialize)
-  (exec-path-from-shell-copy-env "GOPATH"))
+  (exec-path-from-shell-copy-env "GOPATH")
+  (exec-path-from-shell-copy-env "PATH"))
 
 ;; Mac OSX specific settings
 (if (eq system-type 'darwin)
@@ -518,6 +521,12 @@ current window."
             "<tab>" #'company-complete-selection
             "S-<return>" #'company-complete-selection))
 
+(use-package company-box
+  :ensure t
+  :after company
+  :hook
+  (company-mode . company-box-mode))
+
 (use-package company-lsp
   :ensure t
   :after (company lsp-mode)
@@ -532,20 +541,6 @@ current window."
         (set (make-local-variable 'company-backends) '(company-lsp)))))
   :config
   (add-hook 'company-mode-hook #'lj-company--setup-lsp-backend))
-
-;; (use-package company-go
-;;   :ensure t
-;;   :after go-mode
-;;   :config
-;;   (progn
-;;     (setq company-go-show-annotation t)
-;;     (setq company-idle-delay .2)
-;;     (setq company-echo-delay 0)
-;;     (add-hook 'go-mode-hook
-;;  	      (lambda ()
-;;  		(set (make-local-variable 'company-backends) '(company-go))
-;;  		(company-mode)))))
-
 
 (use-package go-mode
   :ensure t
@@ -637,6 +632,8 @@ current window."
   :config
   (add-hook 'go-mode-hook 'go-eldoc-setup))
 
+(setq counsel-rg-base-command "rg -i -g '!.git/*' --no-heading --line-number --hidden --max-columns 120 --color never %s .")
+
 (use-package go-tag
   :ensure t
   :after go-mode
@@ -700,20 +697,6 @@ current window."
 (use-package protobuf-mode
   :ensure t)
 
-(use-package php-mode
-  :ensure t
-  :mode ("\\.php\\'" . php-mode))
-
-;; (use-package company-php
-;;   :ensure t
-;;   :init
-;;   (progn
-;;     (add-hook 'php-mode-hook 'ac-php-core-eldoc-setup)
-;;     (add-hook 'php-mode-hook
-;; 	      (lambda ()
-;; 		(set (make-local-variable 'company-backends) '(company-php))
-;; 		(company-mode)))))
-
 (use-package scala-mode
   :ensure t
   :mode ("\\.scala\\'" . scala-mode))
@@ -736,6 +719,27 @@ current window."
   :init (setq markdown-command "multimarkdown"))
 
 (use-package lj-hydra)
+
+(defvar php--lsp-ip-cmd `("node" ,(executable-find "intelephense") "--stdio"))
+
+(use-package php-mode
+  :ensure t
+  :mode ("\\.php\\'" . php-mode)
+  :custom
+  (php-template-compatibility nil)
+  :preface
+  (defun php--setup-intelephense ()
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection php--lsp-ip-cmd)
+                      :major-modes '(php-mode)
+                      :priority -1
+                      :server-id 'php-ip
+                      :ignore-messages '("indexing\\(Started\\|Ended\\)"))))
+  (defun php--setup ()
+    (php--setup-intelephense)
+    (lsp))
+  :hook
+  (php-mode . php--setup))
 
 (provide 'init)
 
