@@ -431,7 +431,11 @@ current window."
 
 (use-package counsel
   :ensure t
-  :after swiper)
+  :after swiper
+  :config
+  (setf (alist-get 'counsel-ag ivy-re-builders-alist)
+        #'ivy--regex-plus))
+
 
 (use-package flx-ido
   :ensure t
