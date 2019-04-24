@@ -375,9 +375,19 @@ current window."
   (progn
     (lj-leader-def "iUU" 'lj-uuidgen-1 :which-key "generate v1 UUID")))
 
+;; (use-package flycheck
+;;   :ensure t
+;;   :init (global-flycheck-mode))
+
 (use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
+  :hook (after-init . global-flycheck-mode)
+  :config
+  (setq flycheck-indication-mode 'right-fringe)
+  (setq flycheck-emacs-lisp-load-path 'inherit)
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+
+  ;; Only check while saving and opening files
+  (setq flycheck-check-syntax-automatically '(save mode-enabled)))
 
 (use-package wgrep
   :ensure t
@@ -427,7 +437,8 @@ current window."
     (progn
       (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
       (add-to-list 'default-frame-alist '(ns-appearance . 'nil))
-      (set-frame-font "Source Code Pro 15")
+      (add-to-list 'default-frame-alist
+                   '(font . "Source Code Pro 14"))
       (setq mac-command-modifier 'meta)
       (setq mac-right-option-modifier 'control)
       (setq dired-use-ls-dired nil)
@@ -464,6 +475,9 @@ current window."
 
 (use-package projectile
   :ensure t
+  :init
+  (setq projectile-sort-order 'recentf)
+  (setq projectile-use-git-grep t)
   :config
   (progn
     (setq projectile-completion-system 'ivy)
@@ -520,30 +534,49 @@ current window."
 (use-package lsp-mode
   :ensure t
   :init
-  (setq lsp-prefer-flymake nil))
+  (setq lsp-prefer-flymake nil)
+  (setq flymake-fringe-indicator-position 'right-fringe))
 
 (use-package lsp-ui
-  :ensure t
-  :after lsp-mode
-  :init
-  (progn
-    (setq lsp-ui-doc-enable nil)
-    (setq lsp-ui-sideline-enable nil)))
+  :custom-face
+  (lsp-ui-doc-background ((t (:background nil))))
+  (lsp-ui-doc-header ((t (:inherit (font-lock-string-face italic)))))
+  :bind (:map lsp-ui-mode-map
+              ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+              ([remap xref-find-references] . lsp-ui-peek-find-references)
+              ("C-c u" . lsp-ui-imenu))
+  :init (setq lsp-ui-doc-enable nil
+              lsp-ui-doc-header t
+              lsp-ui-doc-include-signature t
+              lsp-ui-doc-position 'top
+              lsp-ui-doc-use-webkit t
+              lsp-ui-doc-border (face-foreground 'default)
+
+              lsp-ui-sideline-enable nil
+              lsp-ui-sideline-ignore-duplicate t)
+  :config
+  ;; WORKAROUND Hide mode-line of the lsp-ui-imenu buffer
+  ;; https://github.com/emacs-lsp/lsp-ui/issues/243
+  (defadvice lsp-ui-imenu (after hide-lsp-ui-imenu-mode-line activate)
+    (setq mode-line-format nil)))
 
 (use-package company
+  :hook (after-init . global-company-mode)
+  :defines (company-dabbrev-ignore-case company-dabbrev-downcase)
   :config
-  (add-hook 'after-init-hook 'global-company-mode)
+  (setq company-tooltip-align-annotations t ; aligns annotation to the right
+        company-tooltip-limit 12            ; bigger popup window
+        company-idle-delay .2               ; decrease delay before autocompletion popup shows
+        company-echo-delay 0                ; remove annoying blinking
+        company-minimum-prefix-length 2
+        company-require-match nil
+        company-dabbrev-ignore-case nil
+        company-dabbrev-downcase nil)
   :general
   (:keymaps 'company-active-map
             "TAB" #'company-complete-selection
             "<tab>" #'company-complete-selection
             "S-<return>" #'company-complete-selection))
-
-(use-package company-box
-  :ensure t
-  :after company
-  :hook
-  (company-mode . company-box-mode))
 
 (use-package company-lsp
   :ensure t
@@ -559,6 +592,84 @@ current window."
         (set (make-local-variable 'company-backends) '(company-lsp)))))
   :config
   (add-hook 'company-mode-hook #'lj-company--setup-lsp-backend))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode)
+  :init (setq company-box-icons-alist 'company-box-icons-all-the-icons)
+  :config
+  (setq company-box-backends-colors nil)
+  (setq company-box-show-single-candidate t)
+  (setq company-box-max-candidates 50)
+  ;; Support `company-common'
+  (defun my-company-box--make-line (candidate)
+    (-let* (((candidate annotation len-c len-a backend) candidate)
+            (color (company-box--get-color backend))
+            ((c-color a-color i-color s-color) (company-box--resolve-colors color))
+            (icon-string (and company-box--with-icons-p (company-box--add-icon candidate)))
+            (candidate-string (concat (propertize company-common 'face 'company-tooltip-common)
+                                      (substring (propertize candidate 'face 'company-box-candidate) (length company-common) nil)))
+            (align-string (when annotation
+                            (concat " " (and company-tooltip-align-annotations
+                                             (propertize " " 'display `(space :align-to (- right-fringe ,(or len-a 0) 1)))))))
+            (space company-box--space)
+            (icon-p company-box-enable-icon)
+            (annotation-string (and annotation (propertize annotation 'face 'company-box-annotation)))
+            (line (concat (unless (or (and (= space 2) icon-p) (= space 0))
+                            (propertize " " 'display `(space :width ,(if (or (= space 1) (not icon-p)) 1 0.75))))
+                          (company-box--apply-color icon-string i-color)
+                          (company-box--apply-color candidate-string c-color)
+                          align-string
+                          (company-box--apply-color annotation-string a-color)))
+            (len (length line)))
+      (add-text-properties 0 len (list 'company-box--len (+ len-c len-a)
+                                       'company-box--color s-color)
+                           line)
+      line))
+  (advice-add #'company-box--make-line :override #'my-company-box--make-line)
+
+  ;; Prettify icons
+  (defun my-company-box-icons--elisp (candidate)
+    (when (derived-mode-p 'emacs-lisp-mode)
+      (let ((sym (intern candidate)))
+        (cond ((fboundp sym) 'Function)
+              ((featurep sym) 'Module)
+              ((facep sym) 'Color)
+              ((boundp sym) 'Variable)
+              ((symbolp sym) 'Text)
+              (t . nil)))))
+  (advice-add #'company-box-icons--elisp :override #'my-company-box-icons--elisp)
+
+  (with-eval-after-load 'all-the-icons
+    (declare-function all-the-icons-faicon 'all-the-icons)
+    (declare-function all-the-icons-material 'all-the-icons)
+    (setq company-box-icons-all-the-icons
+          `((Unknown . ,(all-the-icons-material "find_in_page" :height 0.9 :v-adjust -0.2))
+            (Text . ,(all-the-icons-faicon "text-width" :height 0.85 :v-adjust -0.05))
+            (Method . ,(all-the-icons-faicon "cube" :height 0.85 :v-adjust -0.05 :face 'all-the-icons-purple))
+            (Function . ,(all-the-icons-faicon "cube" :height 0.85 :v-adjust -0.05 :face 'all-the-icons-purple))
+            (Constructor . ,(all-the-icons-faicon "cube" :height 0.85 :v-adjust -0.05 :face 'all-the-icons-purple))
+            (Field . ,(all-the-icons-faicon "tag" :height 0.85 :v-adjust -0.05 :face 'all-the-icons-lblue))
+            (Variable . ,(all-the-icons-faicon "tag" :height 0.85 :v-adjust -0.05 :face 'all-the-icons-lblue))
+            (Class . ,(all-the-icons-material "settings_input_component" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-orange))
+            (Interface . ,(all-the-icons-material "share" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-lblue))
+            (Module . ,(all-the-icons-material "view_module" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-lblue))
+            (Property . ,(all-the-icons-faicon "wrench" :height 0.85 :v-adjust -0.05))
+            (Unit . ,(all-the-icons-material "settings_system_daydream" :height 0.9 :v-adjust -0.2))
+            (Value . ,(all-the-icons-material "format_align_right" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-lblue))
+            (Enum . ,(all-the-icons-material "storage" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-orange))
+            (Keyword . ,(all-the-icons-material "filter_center_focus" :height 0.9 :v-adjust -0.2))
+            (Snippet . ,(all-the-icons-material "format_align_center" :height 0.9 :v-adjust -0.2))
+            (Color . ,(all-the-icons-material "palette" :height 0.9 :v-adjust -0.2))
+            (File . ,(all-the-icons-faicon "file-o" :height 0.9 :v-adjust -0.05))
+            (Reference . ,(all-the-icons-material "collections_bookmark" :height 0.9 :v-adjust -0.2))
+            (Folder . ,(all-the-icons-faicon "folder-open" :height 0.9 :v-adjust -0.05))
+            (EnumMember . ,(all-the-icons-material "format_align_right" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-lblue))
+            (Constant . ,(all-the-icons-faicon "square-o" :height 0.9 :v-adjust -0.05))
+            (Struct . ,(all-the-icons-material "settings_input_component" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-orange))
+            (Event . ,(all-the-icons-faicon "bolt" :height 0.85 :v-adjust -0.05 :face 'all-the-icons-orange))
+            (Operator . ,(all-the-icons-material "control_point" :height 0.9 :v-adjust -0.2))
+            (TypeParameter . ,(all-the-icons-faicon "arrows" :height 0.85 :v-adjust -0.05))
+            (Template . ,(all-the-icons-material "format_align_center" :height 0.9 :v-adjust -0.2))))))
 
 (use-package go-mode
   :ensure t
@@ -762,6 +873,122 @@ current window."
     (lsp))
   :hook
   (php-mode . php--setup))
+
+(use-package css-mode
+  :ensure t
+  :ensure nil
+  :init (setq css-indent-offset 2))
+
+;; SCSS mode
+(use-package scss-mode
+  :ensure t
+  :init
+  ;; Disable complilation on save
+  (setq scss-compile-at-save nil))
+
+;; New `less-cs-mde' in Emacs 26
+(unless (fboundp 'less-css-mode)
+  (use-package less-css-mode
+    :ensure t))
+
+;; CSS eldoc
+(use-package css-eldoc
+  :ensure t
+  :commands turn-on-css-eldoc
+  :hook ((css-mode scss-mode less-css-mode) . turn-on-css-eldoc))
+
+;; JSON mode
+(use-package json-mode
+  :ensure t)
+
+;; Improved JavaScript editing mode
+(use-package js2-mode
+  :ensure t
+  :defines flycheck-javascript-eslint-executable
+  :mode (("\\.js\\'" . js2-mode)
+         ("\\.jsx\\'" . js2-jsx-mode))
+  :interpreter (("node" . js2-mode)
+                ("node" . js2-jsx-mode))
+  :hook ((js2-mode . js2-imenu-extras-mode)
+         (js2-mode . js2-highlight-unused-variables-mode))
+  :config
+  ;; Use default keybindings for lsp
+  (unbind-key "M-." js2-mode-map))
+
+(with-eval-after-load 'flycheck
+  (if (or (executable-find "eslint_d")
+          (executable-find "eslint")
+          (executable-find "jshint"))
+      (setq js2-mode-show-strict-warnings nil))
+  (if (executable-find "eslint_d")
+      ;; https://github.com/mantoni/eslint_d.js
+      ;; npm -i -g eslint_d
+      (setq flycheck-javascript-eslint-executable "eslint_d")))
+
+(use-package js2-refactor
+  :ensure t
+  :diminish js2-refactor-mode
+  :hook (js2-mode . js2-refactor-mode)
+  :config (js2r-add-keybindings-with-prefix "C-c C-m"))
+
+;; Run Mocha or Jasmine tests
+(use-package mocha
+  :ensure t
+  :config (use-package mocha-snippets))
+
+;; Major mode for CoffeeScript code
+(use-package coffee-mode
+  :ensure t
+  :config (setq coffee-tab-width 2))
+
+;; Major mode for editing web templates
+(use-package web-mode
+  :ensure t
+  :defines company-backends
+  :mode "\\.\\(phtml\\|php|[gj]sp\\|as[cp]x\\|erb\\|djhtml\\|html?\\|hbs\\|ejs\\|jade\\|swig\\|tm?pl\\|vue\\)$"
+  :config
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2))
+
+;; Live browser JavaScript, CSS, and HTML interaction
+(use-package skewer-mode
+  :ensure t
+  :diminish skewer-mode
+  :hook ((js2-mode . skewer-mode)
+         (css-mode . skewer-css-mode)
+         (web-mode . skewer-html-mode)
+         (html-mode . skewer-html-mode))
+  :init
+  ;; diminish
+  (with-eval-after-load 'skewer-css
+    (diminish 'skewer-css-mode))
+  (with-eval-after-load 'skewer-html
+    (diminish 'skewer-html-mode)))
+
+;; Format HTML, CSS and JavaScript/JSON by js-beautify
+;; Insta;; npm -g install js-beautify
+(use-package web-beautify
+  :ensure t
+  :init
+  (with-eval-after-load 'js-mode
+    (bind-key "C-c b" #'web-beautify-js js-mode-map))
+  (with-eval-after-load 'js2-mode
+    (bind-key "C-c b" #'web-beautify-js js2-mode-map))
+  (with-eval-after-load 'json-mode
+    (bind-key "C-c b" #'web-beautify-js json-mode-map))
+  (with-eval-after-load 'web-mode
+    (bind-key "C-c b" #'web-beautify-html web-mode-map))
+  (with-eval-after-load 'sgml-mode
+    (bind-key "C-c b" #'web-beautify-html html-mode-map))
+  (with-eval-after-load 'css-mode
+    (bind-key "C-c b" #'web-beautify-css css-mode-map))
+  :config
+  ;; Set indent size to 2
+  (setq web-beautify-args '("-s" "2" "-f" "-")))
+
+(use-package haml-mode
+  :ensure t)
 
 (provide 'init)
 
