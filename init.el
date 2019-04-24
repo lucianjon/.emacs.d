@@ -193,6 +193,41 @@ current window."
 (use-package f
   :ensure t)
 
+(use-package general
+  :ensure t
+  :config
+  (general-override-mode))
+
+(general-create-definer lj-leader-def
+  :states '(normal visual insert emacs)
+  :prefix "SPC"
+  :keymaps 'override
+  :non-normal-prefix "M-SPC")
+
+(lj-leader-def
+  "TAB" '(lj-alternate-buffer :which-key "alternate buffer")
+  "bb"  '(ivy-switch-buffer :which-key "prev buffer")
+  "SPC" '(counsel-M-x :which-key "M-x")
+  ";"   '(lj-comment-or-uncomment-region-or-line :which-key "comment")
+  "ff"  '(counsel-find-file :which-key "find file")
+
+  "wd"  '(evil-window-next :which-key "next window")
+  "w/"  '(evil-window-vsplit :which-key "vertical split window")
+  "wc"  '(evil-window-delete :which-key "delete window")
+  "wo"  '(delete-other-windows :which-key "delete other")
+  "tm"  '(toggle-frame-maximized :which-key "maximise window")
+
+  "im" '(lsp-ui-imenu :which-key "open lsp imenu"))
+
+(general-create-definer lj-local-leader-def
+  :states 'motion
+  :keymaps 'override
+  :prefix "SPC m")
+
+(general-def 'motion
+  "/" 'counsel-grep-or-swiper)
+
+
 (use-package doom-modeline
   :config
   (+doom-modeline|init))
@@ -209,6 +244,23 @@ current window."
 
 (use-package evil
   :ensure t
+  :after general
+  :general
+  (:states '(normal motion)
+           "C-u" #'evil-scroll-page-up
+           "C-d" #'evil-scroll-page-down)
+  (:states 'motion
+           "gb" #'xref-pop-marker-stack)
+  (:keymaps 'help-mode-map
+            :states 'motion
+            "<escape>" #'quit-window
+            "<tab>" #'forward-button
+            "S-<tab>" #'backward-button
+            "]" #'help-go-forward
+            "[" #'help-go-back
+            "gf" #'help-go-forward
+            "gb" #'help-go-back
+            "gh" #'help-follow-symbol)
   :config
   (progn
     (setq evil-mode-line-format nil)
@@ -307,40 +359,6 @@ current window."
     (advice-add 'highlight-thing-should-highlight-p :filter-return
                 #'lj-highlight-thing--should-highlight-p)))
 
-(use-package general
-  :ensure t
-  :config
-  (general-override-mode))
-
-(general-create-definer lj-leader-def
-  :states '(normal visual insert emacs)
-  :prefix "SPC"
-  :keymaps 'override
-  :non-normal-prefix "M-SPC")
-
-(lj-leader-def
-  "TAB" '(lj-alternate-buffer :which-key "alternate buffer")
-  "bb"  '(ivy-switch-buffer :which-key "prev buffer")
-  "SPC" '(counsel-M-x :which-key "M-x")
-  ";"   '(lj-comment-or-uncomment-region-or-line :which-key "comment")
-  "ff"  '(counsel-find-file :which-key "find file")
-
-  "wd"  '(evil-window-next :which-key "next window")
-  "w/"  '(evil-window-vsplit :which-key "vertical split window")
-  "wc"  '(evil-window-delete :which-key "delete window")
-  "wo"  '(delete-other-windows :which-key "delete other")
-  "tm"  '(toggle-frame-maximized :which-key "maximise window")
-
-  "im" '(lsp-ui-imenu :which-key "open lsp imenu"))
-
-(general-create-definer lj-local-leader-def
-  :states 'motion
-  :keymaps 'override
-  :prefix "SPC m")
-
-(general-def 'motion
-  "/" 'counsel-grep-or-swiper)
-
 (defun lj-uuidgen-1 (arg)
   "Return a time based UUID (UUIDv1).
  If ARG is non nil then use CID format."
@@ -423,18 +441,14 @@ current window."
     (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
     (ivy-mode 1)
     (setq ivy-use-virtual-buffers t)
+    (setq ivy-count-format "(%d/%d) ")
+    (setq ivy-re-builders-alist '((t . ivy--regex-plus)))
     (setq ivy-height 10)
-    (setq ivy-count-format "")
-    (setq ivy-initial-inputs-alist nil)
-    (setq ivy-re-builders-alist
-          '((t . ivy--regex-ignore-order)))))
+    (setq ivy-initial-inputs-alist nil)))
 
 (use-package counsel
   :ensure t
-  :after swiper
-  :config
-  (setf (alist-get 'counsel-ag ivy-re-builders-alist)
-        #'ivy--regex-plus))
+  :after swiper)
 
 
 (use-package flx-ido
@@ -636,7 +650,7 @@ current window."
   :config
   (add-hook 'go-mode-hook 'go-eldoc-setup))
 
-(setq counsel-rg-base-command "rg -i -g '!.git/*' --no-heading --line-number --hidden --max-columns 120 --color never %s .")
+(setq counsel-rg-base-command "rg -i -g '!.git/*' --no-heading --line-number --hidden --color never %s .")
 
 (use-package go-tag
   :ensure t
@@ -729,6 +743,10 @@ current window."
 (use-package php-mode
   :ensure t
   :mode ("\\.php\\'" . php-mode)
+  :general
+  (:keymaps 'php-mode-map
+            "(" nil
+            "{" nil)
   :custom
   (php-template-compatibility nil)
   :preface
