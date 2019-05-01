@@ -215,9 +215,7 @@ current window."
   "w/"  '(evil-window-vsplit :which-key "vertical split window")
   "wc"  '(evil-window-delete :which-key "delete window")
   "wo"  '(delete-other-windows :which-key "delete other")
-  "tm"  '(toggle-frame-maximized :which-key "maximise window")
-
-  "im" '(lsp-ui-imenu :which-key "open lsp imenu"))
+  "tm"  '(toggle-frame-maximized :which-key "maximise window"))
 
 (general-create-definer lj-local-leader-def
   :states 'motion
@@ -430,6 +428,7 @@ current window."
   :config
   (exec-path-from-shell-initialize)
   (exec-path-from-shell-copy-env "GOPATH")
+  (exec-path-from-shell-copy-env "JAVA_HOME")
   (exec-path-from-shell-copy-env "PATH"))
 
 ;; Mac OSX specific settings
@@ -438,7 +437,7 @@ current window."
       (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
       (add-to-list 'default-frame-alist '(ns-appearance . 'nil))
       (add-to-list 'default-frame-alist
-                   '(font . "Source Code Pro 14"))
+                   '(font . "Source Code Pro 15"))
       (setq mac-command-modifier 'meta)
       (setq mac-right-option-modifier 'control)
       (setq dired-use-ls-dired nil)
@@ -535,7 +534,16 @@ current window."
   :ensure t
   :init
   (setq lsp-prefer-flymake nil)
-  (setq flymake-fringe-indicator-position 'right-fringe))
+  (setq flymake-fringe-indicator-position 'right-fringe)
+  :config
+  (which-key-add-major-mode-key-based-replacements 'lsp-mode
+    "SPC ml" "lsp")
+
+  (lj-local-leader-def
+    :keymaps 'lsp-mode-map
+    "lg" 'lsp-find-definition
+    "lr" 'lsp-find-references
+    "lm" 'lsp-ui-imenu))
 
 (use-package lsp-ui
   :custom-face
@@ -732,7 +740,6 @@ current window."
 
     (lj-local-leader-def
       :keymaps 'go-mode-map
-      "gg" 'lsp-find-definition
       "tp" 'lj-go-run-package-tests
       "tf" 'lj-go-run-test-current-function)))
 
@@ -931,16 +938,6 @@ current window."
   :hook (js2-mode . js2-refactor-mode)
   :config (js2r-add-keybindings-with-prefix "C-c C-m"))
 
-;; Run Mocha or Jasmine tests
-(use-package mocha
-  :ensure t
-  :config (use-package mocha-snippets))
-
-;; Major mode for CoffeeScript code
-(use-package coffee-mode
-  :ensure t
-  :config (setq coffee-tab-width 2))
-
 ;; Major mode for editing web templates
 (use-package web-mode
   :ensure t
@@ -989,6 +986,28 @@ current window."
 
 (use-package haml-mode
   :ensure t)
+
+(use-package scala-mode
+  :ensure t
+  :mode "\\.s\\(cala\\|bt\\)$")
+
+(use-package sbt-mode
+  :ensure t
+  :commands sbt-start sbt-command
+  :config
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map))
+
+(use-package lsp-scala
+  :ensure t
+  :after scala-mode
+  :demand t
+  ;; Optional - enable lsp-scala automatically in scala files
+  :hook (scala-mode . lsp))
 
 (provide 'init)
 
