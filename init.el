@@ -602,6 +602,7 @@ current window."
   (add-hook 'company-mode-hook #'lj-company--setup-lsp-backend))
 
 (use-package company-box
+  :ensure t
   :hook (company-mode . company-box-mode)
   :init (setq company-box-icons-alist 'company-box-icons-all-the-icons)
   :config
