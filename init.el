@@ -987,6 +987,33 @@ current window."
   ;; Optional - enable lsp-scala automatically in scala files
   :hook (scala-mode . lsp))
 
+(use-package deadgrep
+  :ensure t
+  :commands (deadgrep)
+  :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
+
+  :preface
+  (defun config-editing--deadgrep-requery ()
+    (interactive)
+    (let ((button (save-excursion
+                    (goto-char (point-min))
+                    (forward-button 1))))
+      (button-activate button)))
+  :general (:states 'normal :keymaps 'deadgrep-mode-map "c" #'config-editing--deadgrep-requery)
+
+  :preface
+  (defun config-editing--on-enter-deadgrep-edit-mode (&rest _)
+    (message "Entering edit mode. Changes will be made to underlying files as you edit."))
+  :config
+  (advice-add #'deadgrep-edit-mode :after #'config-editing--on-enter-deadgrep-edit-mode)
+
+  :preface
+  (defun config-editing--on-exit-deadgrep-edit-mode (&rest _)
+    (when (derived-mode-p 'deadgrep-edit-mode)
+      (message "Exiting edit mode.")))
+  :config
+  (advice-add #'deadgrep-mode :before #'config-editing--on-exit-deadgrep-edit-mode))
+
 (use-package lj-python)
 
 (provide 'init)
