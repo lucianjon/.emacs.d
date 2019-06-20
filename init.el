@@ -198,33 +198,7 @@ current window."
   :config
   (general-override-mode))
 
-(general-create-definer lj-leader-def
-  :states '(normal visual insert emacs)
-  :prefix "SPC"
-  :keymaps 'override
-  :non-normal-prefix "M-SPC")
-
-(lj-leader-def
-  "TAB" '(lj-alternate-buffer :which-key "alternate buffer")
-  "bb"  '(ivy-switch-buffer :which-key "prev buffer")
-  "SPC" '(counsel-M-x :which-key "M-x")
-  ";"   '(lj-comment-or-uncomment-region-or-line :which-key "comment")
-  "ff"  '(counsel-find-file :which-key "find file")
-
-  "wd"  '(evil-window-next :which-key "next window")
-  "w/"  '(evil-window-vsplit :which-key "vertical split window")
-  "wc"  '(evil-window-delete :which-key "delete window")
-  "wo"  '(delete-other-windows :which-key "delete other")
-  "tm"  '(toggle-frame-maximized :which-key "maximise window"))
-
-(general-create-definer lj-local-leader-def
-  :states 'motion
-  :keymaps 'override
-  :prefix "SPC m")
-
-(general-def 'motion
-  "/" 'counsel-grep-or-swiper)
-
+(require 'definers)
 
 (use-package doom-modeline
   :config
@@ -535,6 +509,9 @@ current window."
   :init
   (setq lsp-prefer-flymake nil)
   (setq flymake-fringe-indicator-position 'right-fringe)
+  :general
+  (:keymaps 'lsp-mode-map :states '(normal motion visual)
+            "K" #'lsp-describe-thing-at-point)
   :config
   (which-key-add-major-mode-key-based-replacements 'lsp-mode
     "SPC ml" "lsp")
@@ -1009,6 +986,8 @@ current window."
   :demand t
   ;; Optional - enable lsp-scala automatically in scala files
   :hook (scala-mode . lsp))
+
+(use-package lj-python)
 
 (provide 'init)
 
