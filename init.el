@@ -126,7 +126,7 @@ current window."
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-(set-frame-font "Hack 15")
+(set-frame-font "Hack 12")
 
 ;; (set-face-attribute 'default nil :height 150 :family "Ubuntu Mono")
 
@@ -204,7 +204,9 @@ current window."
 
 (use-package doom-modeline
   :ensure t
-  :hook (after-init . doom-modeline-mode))
+  :hook (after-init . doom-modeline-mode)
+  :config
+  (setq doom-modeline-height 15))
 
 (use-package smex
   :ensure t
