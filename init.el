@@ -200,37 +200,11 @@ current window."
   :config
   (general-override-mode))
 
-(general-create-definer lj-leader-def
-  :states '(normal visual insert emacs)
-  :prefix "SPC"
-  :keymaps 'override
-  :non-normal-prefix "M-SPC")
-
-(lj-leader-def
-  "TAB" '(lj-alternate-buffer :which-key "alternate buffer")
-  "bb"  '(ivy-switch-buffer :which-key "prev buffer")
-  "SPC" '(counsel-M-x :which-key "M-x")
-  ";"   '(lj-comment-or-uncomment-region-or-line :which-key "comment")
-  "ff"  '(counsel-find-file :which-key "find file")
-
-  "wd"  '(evil-window-next :which-key "next window")
-  "w/"  '(evil-window-vsplit :which-key "vertical split window")
-  "wc"  '(evil-window-delete :which-key "delete window")
-  "wo"  '(delete-other-windows :which-key "delete other")
-  "tm"  '(toggle-frame-maximized :which-key "maximise window"))
-
-(general-create-definer lj-local-leader-def
-  :states 'motion
-  :keymaps 'override
-  :prefix "SPC m")
-
-(general-def 'motion
-  "/" 'counsel-grep-or-swiper)
-
+(require 'definers)
 
 (use-package doom-modeline
-  :config
-  (+doom-modeline|init))
+  :ensure t
+  :hook (after-init . doom-modeline-mode))
 
 (use-package smex
   :ensure t
@@ -534,9 +508,13 @@ current window."
 
 (use-package lsp-mode
   :ensure t
+  :commands lsp
   :init
-  (setq lsp-prefer-flymake nil)
   (setq flymake-fringe-indicator-position 'right-fringe)
+  :hook (go-mode . lsp)
+  :general
+  (:keymaps 'lsp-mode-map :states '(normal motion visual)
+            "K" #'lsp-describe-thing-at-point)
   :config
   (which-key-add-major-mode-key-based-replacements 'lsp-mode
     "SPC ml" "lsp")
@@ -1017,8 +995,34 @@ current window."
   :ensure t
   :mode "\\.jsonnet$")
 
-(use-package lsp-java :ensure t :after lsp
-  :config (add-hook 'java-mode-hook 'lsp))
+(use-package deadgrep
+  :ensure t
+  :commands (deadgrep)
+  :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
+
+  :preface
+  (defun config-editing--deadgrep-requery ()
+    (interactive)
+    (let ((button (save-excursion
+                    (goto-char (point-min))
+                    (forward-button 1))))
+      (button-activate button)))
+  :general (:states 'normal :keymaps 'deadgrep-mode-map "c" #'config-editing--deadgrep-requery)
+
+  :preface
+  (defun config-editing--on-enter-deadgrep-edit-mode (&rest _)
+    (message "Entering edit mode. Changes will be made to underlying files as you edit."))
+  :config
+  (advice-add #'deadgrep-edit-mode :after #'config-editing--on-enter-deadgrep-edit-mode)
+
+  :preface
+  (defun config-editing--on-exit-deadgrep-edit-mode (&rest _)
+    (when (derived-mode-p 'deadgrep-edit-mode)
+      (message "Exiting edit mode.")))
+  :config
+  (advice-add #'deadgrep-mode :before #'config-editing--on-exit-deadgrep-edit-mode))
+
+(use-package lj-python)
 
 (provide 'init)
 
