@@ -126,7 +126,9 @@ current window."
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-(set-frame-font "Hack 12")
+(set-frame-font "Hack 15")
+
+;; (set-face-attribute 'default nil :height 150 :family "Ubuntu Mono")
 
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
@@ -546,6 +548,7 @@ current window."
     "lm" 'lsp-ui-imenu))
 
 (use-package lsp-ui
+  :ensure t
   :custom-face
   (lsp-ui-doc-background ((t (:background nil))))
   (lsp-ui-doc-header ((t (:inherit (font-lock-string-face italic)))))
@@ -602,6 +605,7 @@ current window."
   (add-hook 'company-mode-hook #'lj-company--setup-lsp-backend))
 
 (use-package company-box
+  :ensure t
   :hook (company-mode . company-box-mode)
   :init (setq company-box-icons-alist 'company-box-icons-all-the-icons)
   :config
@@ -690,6 +694,8 @@ current window."
   (defun lj-setup-go ()
     "Run setup for Go buffers."
     (progn
+      (setq-local tab-width 4)
+      (setq-local indent-tabs-mode t)
       (if (lj-modules-p)
           (setenv "GO111MODULE" "on")
         (setenv "GO111MODULE" "auto"))
@@ -700,8 +706,6 @@ current window."
   (progn
     (setq gofmt-command "goimports")
     ;; (setq godoc-at-point-function 'godoc-gogetdoc)
-    (setq-local tab-width 4)
-    (setq-local indent-tabs-mode t)
 
     (add-hook 'before-save-hook 'gofmt-before-save)
 
@@ -726,7 +730,7 @@ current window."
       (if (string-match "_test\\.go" buffer-file-name)
           (save-excursion
             (re-search-backward "^func[ ]+\\(([[:alnum:]]*?[ ]?[*]?[[:alnum:]]+)[ ]+\\)?\\(Test[[:alnum:]_]+\\)(.*)")
-            (lj-go-run-tests (concat "-run" "='" (match-string-no-properties 2) "$'")))
+            (lj-go-run-tests (concat " -run" "='" (match-string-no-properties 2) "$'")))
         (message "Must be in a _test.go file to run go-run-test-current-function")))
 
     (push '("*go test*" :dedicated t :position bottom :stick t :noselect t :height 0.25) popwin:special-display-config)
@@ -870,7 +874,7 @@ current window."
   :preface
   (defun php--setup-intelephense ()
     (lsp-register-client
-     (make-lsp-client :new-connection (lsp-stdio-connection php--lsp-ip-cmd)
+     (make-lsp-client :new-connection (lsp-stdio-connection "node intelephense --stdio")
                       :major-modes '(php-mode)
                       :priority -1
                       :server-id 'php-ip
@@ -1008,6 +1012,13 @@ current window."
   :demand t
   ;; Optional - enable lsp-scala automatically in scala files
   :hook (scala-mode . lsp))
+
+(use-package jsonnet-mode
+  :ensure t
+  :mode "\\.jsonnet$")
+
+(use-package lsp-java :ensure t :after lsp
+  :config (add-hook 'java-mode-hook 'lsp))
 
 (provide 'init)
 
