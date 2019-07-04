@@ -201,8 +201,8 @@ current window."
 (require 'definers)
 
 (use-package doom-modeline
-  :config
-  (+doom-modeline|init))
+  :ensure t
+  :hook (after-init . doom-modeline-mode))
 
 (use-package smex
   :ensure t
@@ -506,9 +506,10 @@ current window."
 
 (use-package lsp-mode
   :ensure t
+  :commands lsp
   :init
-  (setq lsp-prefer-flymake nil)
   (setq flymake-fringe-indicator-position 'right-fringe)
+  :hook (go-mode . lsp)
   :general
   (:keymaps 'lsp-mode-map :states '(normal motion visual)
             "K" #'lsp-describe-thing-at-point)
