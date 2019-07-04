@@ -1024,6 +1024,10 @@ current window."
 
 (use-package lj-python)
 
+(use-package yaml-mode
+  :ensure t
+  :mode "\\.y\\(aml\\|ml\\)$")
+
 (provide 'init)
 
 ;;; init.el ends here
