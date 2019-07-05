@@ -386,6 +386,10 @@ current window."
   :config
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
+(use-package forge
+  :ensure t
+  :after magit)
+
 (use-package evil-magit
   :ensure t
   :after magit)
