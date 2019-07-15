@@ -10,3 +10,8 @@ projectile*
 auto-save-list
 .cache
 custom.el
+.lsp*
+lsp-cache/
+transient/
+ido.last
+forge-database.sqlite
