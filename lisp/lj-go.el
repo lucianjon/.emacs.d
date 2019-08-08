@@ -24,15 +24,14 @@
       (if (lj-modules-p)
           (setenv "GO111MODULE" "on")
         (setenv "GO111MODULE" "off"))
-      (lsp)))
+      (lsp-deferred)))
   :hook
   (go-mode . lj-setup-go)
   :config
   (progn
-    (setq gofmt-command "goimports")
+    ;; (setq gofmt-command "goimports")
     ;; (setq godoc-at-point-function 'godoc-gogetdoc)
-
-    (add-hook 'before-save-hook 'gofmt-before-save)
+    (add-hook 'before-save-hook 'lsp-organize-imports)
 
     ;; TODO: make this function a little nicer
     (defun lj-go-run-tests (args)
