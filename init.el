@@ -460,31 +460,6 @@
 
 (use-package lj-hydra)
 
-(defvar php--lsp-ip-cmd `("node" ,(executable-find "intelephense") "--stdio"))
-
-(use-package php-mode
-  :ensure t
-  :mode ("\\.php\\'" . php-mode)
-  :general
-  (:keymaps 'php-mode-map
-            "(" nil
-            "{" nil)
-  :custom
-  (php-template-compatibility nil)
-  :preface
-  (defun php--setup-intelephense ()
-    (lsp-register-client
-     (make-lsp-client :new-connection (lsp-stdio-connection "node intelephense --stdio")
-                      :major-modes '(php-mode)
-                      :priority -1
-                      :server-id 'php-ip
-                      :ignore-messages '("indexing\\(Started\\|Ended\\)"))))
-  (defun php--setup ()
-    (php--setup-intelephense)
-    (lsp))
-  :hook
-  (php-mode . php--setup))
-
 (use-package css-mode
   :ensure t
   :ensure nil
