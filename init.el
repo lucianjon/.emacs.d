@@ -49,7 +49,7 @@
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-(set-frame-font "Hack 12")
+(set-frame-font "Hack 15")
 
 ;; (set-face-attribute 'default nil :height 150 :family "Ubuntu Mono")
 
