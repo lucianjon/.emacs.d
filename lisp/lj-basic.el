@@ -58,6 +58,15 @@
       backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
 
+(defvar org-directory "~/org")
+
+(use-package org
+  :after general
+  :defines (org-state
+            org-log-states
+            org-log-done)
+  :config (setq org-log-done 'time))
+
 (provide 'lj-basic)
 
 ;;; lj-basic.el ends here
