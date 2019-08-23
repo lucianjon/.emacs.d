@@ -23,15 +23,7 @@
 (use-package lsp-python-ms
   :ensure t
   :demand
-  :hook (python-mode . lsp)
-  :config
-
-  ;; for dev build of language server
-  (setq lsp-python-ms-dir
-        (expand-file-name "~/code/src/github.com/Microsoft/python-language-server/output/bin/Release/"))
-  ;; for executable of language server, if it's not symlinked on your PATH
-  (setq lsp-python-ms-executable
-        "~/code/src/github.com/Microsoft/python-language-server/output/bin/Release/osx-x64/publish/Microsoft.Python.LanguageServer"))
+  :hook (python-mode . lsp))
 
 (use-package pipenv
   :ensure t
