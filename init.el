@@ -450,6 +450,9 @@
   :ensure t
   :mode ("\\Dockerfile\\'" . dockerfile-mode))
 
+(use-package diminish
+  :ensure t)
+
 (use-package markdown-mode
   :ensure t
   :commands (markdown-mode gfm-mode)
