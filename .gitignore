@@ -15,3 +15,7 @@ lsp-cache/
 transient/
 ido.last
 forge-database.sqlite
+session.*
+mspyls/
+workspace/
+eclipse*
