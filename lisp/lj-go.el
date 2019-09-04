@@ -62,12 +62,7 @@
 (use-package flycheck-golangci-lint
   :ensure t
   :config
-  (setq flycheck-disabled-checkers '(go-gofmt
-                                     go-golint
-                                     go-vet
-                                     go-build
-                                     go-test
-                                     go-errcheck))
+  (setq flycheck-disabled-checkers '(go-gofmt))
   :hook (go-mode . flycheck-golangci-lint-setup))
 
 (use-package go-eldoc
