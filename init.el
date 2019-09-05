@@ -509,6 +509,8 @@
   :ensure t
   :mode "\\.y\\(aml\\|ml\\)$")
 
+(setq gc-cons-threshold 16777216) ;; 16mb
+
 (provide 'init)
 
 ;;; init.el ends here

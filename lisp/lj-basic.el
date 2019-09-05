@@ -8,8 +8,6 @@
 
 ;;; Code:
 
-(setq gc-cons-threshold 16777216) ;; 16mb
-
 (setq large-file-warning-threshold 100000000)
 
 (setq ring-bell-function 'ignore)
