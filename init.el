@@ -127,6 +127,12 @@
 
 (require 'definers)
 
+(use-package doom-themes
+  :ensure t
+  :init (load-theme 'doom-nord t)
+  :config
+  (doom-themes-org-config))
+
 (use-package doom-modeline
   :ensure t
   :hook (after-init . doom-modeline-mode)
@@ -303,12 +309,6 @@
 ;;     (setq solarized-high-contrast-mode-line t)
 ;;     (load-theme 'solarized-light t)))
 ;;
-
-(use-package doom-themes
-  :ensure t
-  :init (load-theme 'doom-nord t)
-  :config
-  (doom-themes-org-config))
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
