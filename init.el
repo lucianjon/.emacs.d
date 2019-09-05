@@ -224,42 +224,6 @@
     (setq auto-revert-verbose nil)
     (global-auto-revert-mode 1)))
 
-;; (use-package highlight-thing
-;;   :ensure t
-;;   :commands (highlight-thing-mode)
-;;   :init
-;;   (add-hook 'prog-mode-hook #'highlight-thing-mode)
-;;   :preface
-;;   (progn
-
-;;     (defun lj-highlight-thing--face-ancestors (face)
-;;       (let (result)
-;;         (while (and face (not (equal face 'unspecified)))
-;;           (setq result (cons face result))
-;;           (setq face (face-attribute face :inherit)))
-;;         (nreverse result)))
-
-;;     (defun lj-highlight-thing--should-highlight-p (res)
-;;       "Do not highlight symbol if looking at certain faces."
-;;       (when res
-;;         (let ((excluded-faces '(font-lock-string-face
-;;                                 font-lock-keyword-face
-;;                                 font-lock-comment-face
-;;                                 font-lock-preprocessor-face
-;;                                 font-lock-builtin-face))
-;;               (faces (seq-mapcat #'lj-highlight-thing--face-ancestors (face-at-point nil t))))
-;;           (null (seq-intersection faces excluded-faces))))))
-
-;;   :config
-;;   (progn
-;;     (setq highlight-thing-what-thing 'symbol)
-;;     (setq highlight-thing-delay-seconds 0.5)
-;;     (setq highlight-thing-limit-to-defun nil)
-;;     (setq highlight-thing-case-sensitive-p t)
-
-;;     (advice-add 'highlight-thing-should-highlight-p :filter-return
-;;                 #'lj-highlight-thing--should-highlight-p)))
-
 (defun lj-uuidgen-1 (arg)
   "Return a time based UUID (UUIDv1).
  If ARG is non nil then use CID format."
@@ -285,6 +249,19 @@
 
   ;; Only check while saving and opening files
   (setq flycheck-check-syntax-automatically '(save mode-enabled)))
+
+(use-package posframe
+  :ensure t)
+
+(use-package flycheck-posframe
+  :ensure t
+  :after flycheck
+  :init (add-hook 'flycheck-mode-hook 'flycheck-posframe-mode)
+  :config
+  (setq flycheck-posframe-warning-prefix "\u26a0 ")
+  (setq flycheck-posframe-error-prefix "\u274c ")
+  (set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
+  (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error))
 
 (use-package wgrep
   :ensure t
