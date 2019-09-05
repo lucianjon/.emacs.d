@@ -8,7 +8,7 @@
 
 ;;; Code:
 
-(setq gc-cons-threshold 50000000)
+(setq gc-cons-threshold 16777216) ;; 16mb
 
 (setq large-file-warning-threshold 100000000)
 
@@ -21,7 +21,6 @@
 
 (setq compilation-scroll-output t)
 (set-fringe-mode 0)
-(set-face-attribute 'mode-line nil :box nil :overline nil)
 
 (setq scroll-step           1
       scroll-margin         0
