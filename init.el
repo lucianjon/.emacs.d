@@ -329,9 +329,8 @@
 
 (use-package doom-themes
   :ensure t
-  :init (load-theme 'doom-spacegrey t)
+  :init (load-theme 'doom-nord t)
   :config
-  (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
 (use-package exec-path-from-shell
