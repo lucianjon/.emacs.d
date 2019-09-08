@@ -262,12 +262,13 @@
 (use-package flycheck-posframe
   :ensure t
   :after flycheck
-  :init (add-hook 'flycheck-mode-hook 'flycheck-posframe-mode)
+  :custom
+  (flycheck-posframe-border-width 5)
   :config
-  (setq flycheck-posframe-warning-prefix "\u26a0 ")
-  (setq flycheck-posframe-error-prefix "\u274c ")
-  (set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
-  (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error))
+  (progn
+    (flycheck-posframe-configure-pretty-defaults)
+    (with-eval-after-load 'flycheck
+      (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode))))
 
 (use-package wgrep
   :ensure t
