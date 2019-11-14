@@ -14,6 +14,8 @@
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("org" . "http://orgmode.org/elpa/") t)
 (package-initialize)
 
 (unless package-archive-contents
@@ -419,6 +421,10 @@
 (use-package lj-company)
 (use-package lj-lsp)
 (use-package lj-go)
+
+(use-package graphql-mode
+  :ensure t
+  :mode ("\\.graphql\\'" . graphql-mode))
 
 (use-package protobuf-mode
   :ensure t

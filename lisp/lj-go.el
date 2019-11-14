@@ -16,13 +16,13 @@
     "Run setup for Go buffers."
     (progn
       (setq-local tab-width 4)
-      (setq-local indent-tabs-mode t)
-      (lsp-deferred)))
+      (setq-local indent-tabs-mode t)))
   :hook
   (go-mode . lj-setup-go)
   :config
   (progn
     (add-hook 'before-save-hook 'lsp-organize-imports)
+    (add-hook 'before-save-hook 'lsp-format-buffer)
 
     ;; TODO: make this function a little nicer
     (defun lj-go-run-tests (args)
@@ -58,12 +58,6 @@
       :keymaps 'go-mode-map
       "tp" 'lj-go-run-package-tests
       "tf" 'lj-go-run-test-current-function)))
-
-(use-package flycheck-golangci-lint
-  :ensure t
-  :config
-  (setq flycheck-disabled-checkers '(go-gofmt))
-  :hook (go-mode . flycheck-golangci-lint-setup))
 
 (use-package go-eldoc
   :ensure t

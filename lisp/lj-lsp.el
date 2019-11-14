@@ -13,7 +13,7 @@
   :commands (lsp lsp-deferred lsp-prefer-flymake)
   :init
   (setq flymake-fringe-indicator-position 'right-fringe)
-  :hook ((go-mode . lsp-deferred)
+  :hook ((go-mode . lsp)
          (php-mode . lsp-deferred))
   :general
   (:keymaps 'lsp-mode-map :states '(normal motion visual)
