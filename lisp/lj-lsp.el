@@ -14,7 +14,7 @@
   :init
   (setq flymake-fringe-indicator-position 'right-fringe)
   :hook ((go-mode . lsp)
-         (php-mode . lsp-deferred))
+         (php-mode . lsp))
   :general
   (:keymaps 'lsp-mode-map :states '(normal motion visual)
             "K" #'lsp-describe-thing-at-point)
