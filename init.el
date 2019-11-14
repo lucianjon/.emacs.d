@@ -318,6 +318,7 @@
   :ensure t
   :init
   (exec-path-from-shell-copy-env "GOPATH")
+  (exec-path-from-shell-copy-env "GO111MODULE")
   (exec-path-from-shell-initialize))
 
 ;; Mac OSX specific settings
