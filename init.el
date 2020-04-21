@@ -146,11 +146,6 @@
   :config
   (smex-initialize))
 
-(use-package aggressive-indent
-  :ensure t
-  :config
-  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode))
-
 (use-package evil
   :ensure t
   :after general
@@ -319,6 +314,7 @@
   :init
   (exec-path-from-shell-copy-env "GOPATH")
   (exec-path-from-shell-copy-env "GO111MODULE")
+  (exec-path-from-shell-copy-env "GOPRIVATE")
   (exec-path-from-shell-initialize))
 
 ;; Mac OSX specific settings
@@ -327,7 +323,7 @@
       (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
       (add-to-list 'default-frame-alist '(ns-appearance . 'nil))
       (add-to-list 'default-frame-alist
-                   '(font . "Source Code Pro 15"))
+                   '(font . "Consolas 17"))
       (setq mac-command-modifier 'meta)
       (setq mac-right-option-modifier 'control)
       (setq dired-use-ls-dired nil)
@@ -512,6 +508,14 @@
   (advice-add #'deadgrep-mode :before #'config-editing--on-exit-deadgrep-edit-mode))
 
 (use-package lj-python)
+
+(use-package typescript-mode
+  :ensure t
+  :mode ("\\.tsx?\\'" . typescript-mode)
+  :custom
+  (typescript-indent-level 2)
+  :config
+  (add-hook 'typescript-mode-hook #'lsp))
 
 (use-package yaml-mode
   :ensure t
