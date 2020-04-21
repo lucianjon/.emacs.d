@@ -521,7 +521,8 @@
   :ensure t
   :mode "\\.y\\(aml\\|ml\\)$")
 
-(setq gc-cons-threshold 16777216) ;; 16mb
+(setq gc-cons-threshold 100000000) ;; 100mb
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
 
 (provide 'init)
 
