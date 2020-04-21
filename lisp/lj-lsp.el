@@ -14,7 +14,8 @@
   :init
   (setq flymake-fringe-indicator-position 'right-fringe)
   :hook ((go-mode . lsp)
-         (php-mode . lsp))
+         (php-mode . lsp)
+         (python-mode . lsp))
   :general
   (:keymaps 'lsp-mode-map :states '(normal motion visual)
             "K" #'lsp-describe-thing-at-point)
@@ -69,6 +70,9 @@
         (set (make-local-variable 'company-backends) '(company-lsp)))))
   :config
   (add-hook 'company-mode-hook #'lj-company--setup-lsp-backend))
+
+(use-package lsp-ivy :ensure t :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :ensure t :commands lsp-treemacs-errors-list)
 
 (provide 'lj-lsp)
 
