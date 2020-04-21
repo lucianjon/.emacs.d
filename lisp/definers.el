@@ -38,6 +38,7 @@ current window."
   :states '(normal visual insert emacs)
   :prefix "SPC"
   :keymaps 'override
+  "l" '(:keymap lsp-command-map :wk "lsp" :package lsp-mode)
   :non-normal-prefix "M-SPC")
 
 (lj-leader-def
