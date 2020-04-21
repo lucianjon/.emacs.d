@@ -16,13 +16,12 @@
 
 (use-package python
   :after lsp-mode
-  :config
-  (add-hook 'python-mode-hook #'lsp)
-  (add-hook 'lsp-python-mode-hook #'flycheck-mode))
-
-(use-package lsp-python-ms
-  :ensure t
-  :demand
+  :general
+  (:keymaps 'python-mode-map
+            "<backspace>" nil
+            "DEL" nil)
+  :init
+  (setq lsp-pyls-plugins-pylint-enabled nil)
   :hook (python-mode . lsp))
 
 (use-package pipenv
