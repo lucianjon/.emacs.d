@@ -39,7 +39,12 @@
 (define-key global-map (kbd "RET") #'comment-indent-new-line)
 
 ;; Disable backup files
-(setq make-backup-files nil)
+(defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
+(defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
+(setq backup-directory-alist (list (cons ".*" backup-dir)))
+(setq auto-save-list-file-prefix autosave-dir)
+(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
+(setq create-lockfiles nil)
 
 (add-to-list 'load-path (concat user-emacs-directory "config"))
 (add-to-list 'load-path (concat user-emacs-directory "lisp"))

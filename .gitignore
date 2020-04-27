@@ -18,4 +18,6 @@ forge-database.sqlite
 session.*
 mspyls/
 workspace/
+autosave/
+backups/
 eclipse*
