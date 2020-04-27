@@ -15,7 +15,8 @@
   (setq flymake-fringe-indicator-position 'right-fringe)
   :hook ((go-mode . lsp)
          (php-mode . lsp)
-         (python-mode . lsp))
+         (python-mode . lsp)
+         (lsp-mode . lsp-enable-which-key-integration))
   :general
   (:keymaps 'lsp-mode-map :states '(normal motion visual)
             "K" #'lsp-describe-thing-at-point)
@@ -23,6 +24,7 @@
   (which-key-add-major-mode-key-based-replacements 'lsp-mode
     "SPC ml" "lsp")
   (setq lsp-prefer-flymake nil)
+  (setq lsp-prefer-capf t)
 
   (lj-local-leader-def
     :keymaps 'lsp-mode-map
@@ -55,21 +57,6 @@
   (defadvice lsp-ui-imenu (after hide-lsp-ui-imenu-mode-line activate)
     (setq mode-line-format nil))
   (add-hook 'go-mode-hook 'flycheck-mode))
-
-(use-package company-lsp
-  :ensure t
-  :after (company lsp-mode)
-  :defines company-lsp
-  :preface
-  (progn
-    (defun lj-company--lsp-mode-p ()
-      (and (bound-and-true-p lsp-mode)
-           (bound-and-true-p company-mode)))
-    (defun lj-company--setup-lsp-backend ()
-      (when (lj-company--lsp-mode-p)
-        (set (make-local-variable 'company-backends) '(company-lsp)))))
-  :config
-  (add-hook 'company-mode-hook #'lj-company--setup-lsp-backend))
 
 (use-package lsp-ivy :ensure t :commands lsp-ivy-workspace-symbol)
 (use-package lsp-treemacs :ensure t :commands lsp-treemacs-errors-list)
