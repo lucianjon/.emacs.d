@@ -37,6 +37,8 @@
 
 ;; Auto-indent on RET
 (define-key global-map (kbd "RET") #'comment-indent-new-line)
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
 
 ;; Disable backup files
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -317,7 +319,6 @@
   :if (memq window-system '(mac ns))
   :ensure t
   :init
-  (exec-path-from-shell-copy-env "GOPATH")
   (exec-path-from-shell-copy-env "GO111MODULE")
   (exec-path-from-shell-copy-env "GOPRIVATE")
   (exec-path-from-shell-initialize))
@@ -328,7 +329,7 @@
       (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
       (add-to-list 'default-frame-alist '(ns-appearance . 'nil))
       (add-to-list 'default-frame-alist
-                   '(font . "Consolas 17"))
+                   '(font . "Source Code Pro 16"))
       (setq mac-command-modifier 'meta)
       (setq mac-right-option-modifier 'control)
       (setq dired-use-ls-dired nil)
