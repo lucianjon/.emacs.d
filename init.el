@@ -439,7 +439,9 @@
 
 (use-package terraform-mode
   :ensure t
-  :mode ("\\.tf\\'" . terraform-mode))
+  :mode ("\\.tf\\'" . terraform-mode)
+  :config
+  (add-hook #'terraform-mode-hook #'terraform-format-on-save-mode))
 
 (use-package dockerfile-mode
   :ensure t
