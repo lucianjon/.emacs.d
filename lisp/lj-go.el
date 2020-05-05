@@ -9,7 +9,7 @@
 ;;; Code:
 
 (use-package go-mode
-  :ensure t
+  :straight t
   :mode ("\\.go\\'" . go-mode)
   :preface
   (defun lj-setup-go ()
@@ -60,7 +60,7 @@
       "tf" 'lj-go-run-test-current-function)))
 
 (use-package go-eldoc
-  :ensure t
+  :straight t
   :after go-mode
   :config
   (add-hook 'go-mode-hook 'go-eldoc-setup))

@@ -25,11 +25,11 @@
   :hook (python-mode . lsp))
 
 (use-package pipenv
-  :ensure t
+  :straight t
   :hook (python-mode . pipenv-mode))
 
 (use-package pyvenv
-  :ensure t
+  :straight t
   :commands (pyvenv-activate pyvenv-deactivate pyvenv-workon)
   :hook (python-mode . lj-py/pyvenv-activate-if-found)
   :preface

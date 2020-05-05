@@ -11,7 +11,7 @@
 ;;; Code:
 
 (use-package hydra
-  :ensure t)
+  :straight t)
 
 (defhydra hydra-dired (:hint nil :color pink)
   "

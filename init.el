@@ -10,16 +10,20 @@
 
 ;;; Code:
 
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives
-             '("org" . "http://orgmode.org/elpa/") t)
-(package-initialize)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-(unless package-archive-contents
-  (package-refresh-contents))
+(straight-use-package 'use-package)
 
 (setq-default js-indent-level 2)
 
@@ -29,7 +33,7 @@
 (define-key minibuffer-local-must-match-map (kbd "<escape>") #'keyboard-escape-quit)
 (define-key minibuffer-local-isearch-map (kbd "<escape>") #'keyboard-escape-quit)
 
-(setq custom-file "~/.emacs.d/custom.el")
+(setq custom-file (concat user-emacs-directory "custom.el"))
 (load custom-file)
 
 ;; Instantly display current keystrokes in mini buffer
@@ -40,9 +44,13 @@
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 
+
+(setq user-init-file (or load-file-name (buffer-file-name)))
+(setq user-emacs-directory (file-name-directory user-init-file))
+
 ;; Disable backup files
-(defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
-(defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
+(defvar backup-dir (expand-file-name "~/personal-emacs-config/backup/"))
+(defvar autosave-dir (expand-file-name "~/personal-emacs-config/autosave/"))
 (setq backup-directory-alist (list (cons ".*" backup-dir)))
 (setq auto-save-list-file-prefix autosave-dir)
 (setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
@@ -60,23 +68,13 @@
 
 (set-frame-font "Hack 15")
 
-;; (set-face-attribute 'default nil :height 150 :family "Ubuntu Mono")
-
-;; Bootstrap `use-package'
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(eval-when-compile
-  (require 'use-package))
-
 (use-package lj-basic)
 
 (use-package all-the-icons
-  :ensure t)
+  :straight t)
 
 (use-package s
-  :ensure t)
+  :straight t)
 
 (autoload 'projectile-project-root "projectile")
 
@@ -127,34 +125,34 @@
   (counsel-rg (lj-counsel--escape-string input) start-dir))
 
 (use-package f
-  :ensure t)
+  :straight t)
 
 (use-package general
-  :ensure t
+  :straight t
   :config
   (general-override-mode))
 
 (require 'definers)
 
 (use-package doom-themes
-  :ensure t
+  :straight t
   :init (load-theme 'doom-nord t)
   :config
   (doom-themes-org-config))
 
 (use-package doom-modeline
-  :ensure t
+  :straight t
   :hook (after-init . doom-modeline-mode)
   :config
   (setq doom-modeline-height 15))
 
 (use-package smex
-  :ensure t
+  :straight t
   :config
   (smex-initialize))
 
 (use-package evil
-  :ensure t
+  :straight t
   :after general
   :general
   (:states '(normal motion)
@@ -181,7 +179,7 @@
     (setq evil-insert-state-cursor '("chartreuse3" (bar . 2)))))
 
 (use-package evil-escape
-  :ensure t
+  :straight t
   :after evil
   :config
   (progn
@@ -190,31 +188,31 @@
     (evil-escape-mode)))
 
 (use-package which-key
-  :ensure t
+  :straight t
   :config
   (progn
     (which-key-mode)
     (setq which-key-idle-delay 0.0)))
 
 (use-package smartparens
-  :ensure t
+  :straight t
   :config
   (progn
     (require 'smartparens-config)
     (smartparens-global-mode)))
 
 (use-package rainbow-delimiters
-  :ensure t
+  :straight t
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 (use-package ws-butler
-  :ensure t
+  :straight t
   :config
   (add-hook 'prog-mode-hook #'ws-butler-mode))
 
 (use-package diff-hl
-  :ensure t
+  :straight t
   :config
   (progn
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
@@ -227,7 +225,7 @@
     (setq-default dired-listing-switches "-alhv")))
 
 (use-package autorevert
-  :ensure t
+  :straight t
   :config
   (progn
     (setq global-auto-revert-non-file-buffers t)
@@ -244,7 +242,7 @@
       (insert uuid))))
 
 (use-package uuidgen
-  :ensure t
+  :straight t
   :commands (uuidgen-1)
   :init
   (progn
@@ -261,10 +259,10 @@
   (setq flycheck-check-syntax-automatically '(save mode-enabled)))
 
 (use-package posframe
-  :ensure t)
+  :straight t)
 
 (use-package flycheck-posframe
-  :ensure t
+  :straight t
   :after flycheck
   :custom
   (flycheck-posframe-border-width 5)
@@ -275,7 +273,7 @@
       (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode))))
 
 (use-package wgrep
-  :ensure t
+  :straight t
   :commands (wgrep-setup)
   :init
   (add-hook 'grep-setup-hook #'wgrep-stup)
@@ -284,11 +282,11 @@
     (setq wgrep-auto-save-buffer t)))
 
 (use-package popwin
-  :ensure t
+  :straight t
   :config (popwin-mode 1))
 
 (use-package magit
-  :ensure t
+  :straight t
   :functions (magit-display-buffer-fullframe-status-v1)
   :init
   (lj-leader-def "gs" 'magit-status)
@@ -296,16 +294,16 @@
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
 (use-package forge
-  :ensure t
+  :straight t
   :after magit)
 
 (use-package evil-magit
-  :ensure t
+  :straight t
   :after magit)
 
 ;; solarized-theme
 ;; (use-package solarized-theme
-;;   :ensure t
+;;   :straight t
 ;;   :config
 ;;   (progn
 ;;     (setq solarized-distinct-fringe-background t)
@@ -317,7 +315,7 @@
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
-  :ensure t
+  :straight t
   :init
   (exec-path-from-shell-copy-env "GO111MODULE")
   (exec-path-from-shell-copy-env "GOPRIVATE")
@@ -336,7 +334,7 @@
       (setq frame-title-format nil)))
 
 (use-package ivy
-  :ensure t
+  :straight t
   :diminish (ivy-mode . "")
   :config
   (progn
@@ -349,11 +347,11 @@
     (setq ivy-initial-inputs-alist nil)))
 
 (use-package counsel
-  :ensure t
+  :straight t
   :after swiper)
 
 (use-package flx-ido
-  :ensure t
+  :straight t
   :config
   (progn
     (ido-mode 1)
@@ -364,7 +362,7 @@
     (setq ido-use-faces nil)))
 
 (use-package projectile
-  :ensure t
+  :straight t
   :init
   (setq projectile-sort-order 'recentf)
   (setq projectile-use-git-grep t)
@@ -395,7 +393,7 @@
 
 
 (use-package counsel-projectile
-  :ensure t
+  :straight t
   :config
   (setq counsel-projectile-switch-project-action 'magit-status)
   (lj-leader-def
@@ -417,7 +415,7 @@
     "sF" '(lj-counsel-region-or-symbol :wk "search in dir")))
 
 (use-package yasnippet
-  :ensure t
+  :straight t
   :config
   (yas-global-mode 1))
 
@@ -426,32 +424,28 @@
 (use-package lj-go)
 
 (use-package graphql-mode
-  :ensure t
+  :defer t
   :mode ("\\.graphql\\'" . graphql-mode))
 
 (use-package protobuf-mode
-  :ensure t
+  :defer t
   :mode ("\\.proto\\'" . protobuf-mode))
 
-(use-package scala-mode
-  :ensure t
-  :mode ("\\.scala\\'" . scala-mode))
-
 (use-package terraform-mode
-  :ensure t
+  :defer t
   :mode ("\\.tf\\'" . terraform-mode)
   :config
   (add-hook #'terraform-mode-hook #'terraform-format-on-save-mode))
 
 (use-package dockerfile-mode
-  :ensure t
+  :defer t
   :mode ("\\Dockerfile\\'" . dockerfile-mode))
 
 (use-package diminish
-  :ensure t)
+  :straight t)
 
 (use-package markdown-mode
-  :ensure t
+  :defer t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -461,15 +455,15 @@
 (use-package lj-hydra)
 
 (use-package json-mode
-  :ensure t
+  :defer t
   :mode ("\\.json\\'" . json-mode))
 
 (use-package scala-mode
-  :ensure t
+  :defer t
   :mode "\\.s\\(cala\\|bt\\)$")
 
 (use-package sbt-mode
-  :ensure t
+  :defer t
   :commands sbt-start sbt-command
   :config
   ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
@@ -480,16 +474,16 @@
    minibuffer-local-completion-map))
 
 (use-package lsp-scala
-  :ensure t
+  :defer t
   :after scala-mode
   :hook (scala-mode . lsp))
 
 (use-package jsonnet-mode
-  :ensure t
+  :straight t
   :mode "\\.jsonnet$")
 
 (use-package deadgrep
-  :ensure t
+  :straight t
   :commands (deadgrep)
   :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
 
@@ -518,7 +512,7 @@
 (use-package lj-python)
 
 (use-package typescript-mode
-  :ensure t
+  :straight t
   :mode ("\\.tsx?\\'" . typescript-mode)
   :custom
   (typescript-indent-level 2)
@@ -526,8 +520,10 @@
   (add-hook 'typescript-mode-hook #'lsp))
 
 (use-package yaml-mode
-  :ensure t
+  :straight t
   :mode "\\.y\\(aml\\|ml\\)$")
+
+(use-package lj-sql)
 
 (setq gc-cons-threshold 100000000) ;; 100mb
 (setq read-process-output-max (* 1024 1024)) ;; 1mb

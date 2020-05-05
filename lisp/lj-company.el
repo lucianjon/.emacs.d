@@ -9,6 +9,7 @@
 ;;; Code:
 
 (use-package company
+  :straight t
   :hook (after-init . global-company-mode)
   :defines (company-dabbrev-ignore-case company-dabbrev-downcase)
   :config
@@ -27,6 +28,7 @@
             "S-<return>" #'company-complete-selection))
 
 (use-package company-box
+  :straight t
   :hook (company-mode . company-box-mode)
   :config
   (setq company-box-show-single-candidate t
