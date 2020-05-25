@@ -10,10 +10,11 @@
 
 (use-package lsp-mode
   :straight t
+  :defer t
   :commands (lsp lsp-deferred lsp-prefer-flymake)
   :init
   (setq flymake-fringe-indicator-position 'right-fringe)
-  :hook ((go-mode . lsp-deferred)
+  :hook ((go-mode . lsp)
          (php-mode . lsp-deferred)
          (python-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration))
@@ -35,6 +36,7 @@
 
 (use-package lsp-ui
   :straight t
+  :defer t
   :custom-face
   (lsp-ui-doc-background ((t (:background nil))))
   (lsp-ui-doc-header ((t (:inherit (font-lock-string-face italic)))))
@@ -58,8 +60,8 @@
     (setq mode-line-format nil))
   (add-hook 'go-mode-hook 'flycheck-mode))
 
-(use-package lsp-ivy :straight t :commands lsp-ivy-workspace-symbol)
-(use-package lsp-treemacs :straight t :commands lsp-treemacs-errors-list)
+(use-package lsp-ivy :straight t :defer t :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :straight t :defer t :commands lsp-treemacs-errors-list)
 
 (provide 'lj-lsp)
 

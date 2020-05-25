@@ -10,6 +10,7 @@
 
 (use-package company
   :straight t
+  :defer t
   :hook (after-init . global-company-mode)
   :defines (company-dabbrev-ignore-case company-dabbrev-downcase)
   :config
@@ -29,6 +30,7 @@
 
 (use-package company-box
   :straight t
+  :defer t
   :hook (company-mode . company-box-mode)
   :config
   (setq company-box-show-single-candidate t

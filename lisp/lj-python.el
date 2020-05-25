@@ -15,6 +15,8 @@
 (require 'definers)
 
 (use-package python
+  :straight t
+  :defer t
   :after lsp-mode
   :general
   (:keymaps 'python-mode-map
@@ -26,10 +28,12 @@
 
 (use-package pipenv
   :straight t
+  :defer t
   :hook (python-mode . pipenv-mode))
 
 (use-package pyvenv
   :straight t
+  :defer t
   :commands (pyvenv-activate pyvenv-deactivate pyvenv-workon)
   :hook (python-mode . lj-py/pyvenv-activate-if-found)
   :preface

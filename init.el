@@ -25,6 +25,12 @@
 
 (straight-use-package 'use-package)
 
+(use-package benchmark-init
+  :straight t
+  :config
+  ;; To disable collection of benchmark data after init is done.
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
 (setq-default js-indent-level 2)
 
 (define-key minibuffer-local-map (kbd "<escape>") #'keyboard-escape-quit)
@@ -196,6 +202,7 @@
 
 (use-package smartparens
   :straight t
+  :defer t
   :config
   (progn
     (require 'smartparens-config)
@@ -203,11 +210,13 @@
 
 (use-package rainbow-delimiters
   :straight t
+  :defer t
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 (use-package ws-butler
   :straight t
+  :defer t
   :config
   (add-hook 'prog-mode-hook #'ws-butler-mode))
 
@@ -292,10 +301,6 @@
   (lj-leader-def "gs" 'magit-status)
   :config
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
-
-(use-package forge
-  :straight t
-  :after magit)
 
 (use-package evil-magit
   :straight t
@@ -416,6 +421,7 @@
 
 (use-package yasnippet
   :straight t
+  :defer t
   :config
   (yas-global-mode 1))
 
@@ -423,15 +429,24 @@
 (use-package lj-lsp)
 (use-package lj-go)
 
+(use-package php-mode
+ :straight t
+ :defer t
+ :mode
+ ("\\.php\\'" . php-mode))
+
 (use-package graphql-mode
+  :straight t
   :defer t
   :mode ("\\.graphql\\'" . graphql-mode))
 
 (use-package protobuf-mode
+  :straight t
   :defer t
   :mode ("\\.proto\\'" . protobuf-mode))
 
 (use-package terraform-mode
+  :straight t
   :defer t
   :mode ("\\.tf\\'" . terraform-mode)
   :config
@@ -439,12 +454,14 @@
 
 (use-package dockerfile-mode
   :defer t
+  :straight t
   :mode ("\\Dockerfile\\'" . dockerfile-mode))
 
 (use-package diminish
   :straight t)
 
 (use-package markdown-mode
+  :straight t
   :defer t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
@@ -455,35 +472,18 @@
 (use-package lj-hydra)
 
 (use-package json-mode
+  :straight t
   :defer t
   :mode ("\\.json\\'" . json-mode))
 
-(use-package scala-mode
-  :defer t
-  :mode "\\.s\\(cala\\|bt\\)$")
-
-(use-package sbt-mode
-  :defer t
-  :commands sbt-start sbt-command
-  :config
-  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
-  ;; allows using SPACE when in the minibuffer
-  (substitute-key-definition
-   'minibuffer-complete-word
-   'self-insert-command
-   minibuffer-local-completion-map))
-
-(use-package lsp-scala
-  :defer t
-  :after scala-mode
-  :hook (scala-mode . lsp))
-
 (use-package jsonnet-mode
   :straight t
+  :defer t
   :mode "\\.jsonnet$")
 
 (use-package deadgrep
   :straight t
+  :defer t
   :commands (deadgrep)
   :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
 
@@ -513,6 +513,7 @@
 
 (use-package typescript-mode
   :straight t
+  :defer t
   :mode ("\\.tsx?\\'" . typescript-mode)
   :custom
   (typescript-indent-level 2)
@@ -521,11 +522,14 @@
 
 (use-package yaml-mode
   :straight t
+  :defer t
   :mode "\\.y\\(aml\\|ml\\)$")
 
 (use-package lj-sql)
 
-(setq gc-cons-threshold 100000000) ;; 100mb
+;; (setq gc-cons-threshold 100000000) ;; 100mb
+(setq gc-cons-threshold 16777216 ; 16mb
+          gc-cons-percentage 0.1)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
 (provide 'init)

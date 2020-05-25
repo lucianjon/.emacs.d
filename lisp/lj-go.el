@@ -10,6 +10,7 @@
 
 (use-package go-mode
   :straight t
+  :defer t
   :mode ("\\.go\\'" . go-mode)
   :preface
   (defun lj-setup-go ()
@@ -61,6 +62,7 @@
 
 (use-package go-eldoc
   :straight t
+  :defer t
   :after go-mode
   :config
   (add-hook 'go-mode-hook 'go-eldoc-setup))
